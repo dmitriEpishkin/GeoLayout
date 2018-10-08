@@ -44,6 +44,7 @@ namespace GeoLayout.GeoLayoutTools {
                 new ProfileNamingScheme("[Пикет]-[Профиль]", index => (index + 1).ToString("D" + Digits) + "-" + (ProfileName ?? "")),
                 _prefixSuffixScheme
             };
+            SelectedNamingScheme = ProfileNamingSchemes[0];
 
             StartPoint = WaypointsService.Waypoints.FirstOrDefault();
         }

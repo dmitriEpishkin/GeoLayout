@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -36,17 +35,14 @@ namespace Nordwest.Wpf.Controls
         private UIElement _showAllControl;
         private MapPrefetcher _prefetcher;
 
-        private bool _clustersUpdating = false;
-        private bool _needClustersUpdating = false;
-         
         private readonly OneTimeMointor _addMarkerMonitor = new OneTimeMointor();
 
         private readonly List<BaseToolLayer> _registeredTools = new List<BaseToolLayer>();
 
         public MapControl()
         {
+            LabelPlaceManager = new LabelPlaceManager();
             Tools.CollectionChanged += Tools_CollectionChanged;
-            SelectedItems.CollectionChanged += SelectedItemsCollectionChanged;
         }
 
         private void Tools_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -188,38 +184,28 @@ namespace Nordwest.Wpf.Controls
             if (Layers == null)
                 return;
 
-            if (_clustersUpdating) {
-                _needClustersUpdating = true;
-                return;
+            foreach (var l in Layers.OfType<MapMarkersLayer>()) {
+                l.MarkersTree.CurrentZoom = (int)_gMap.Zoom;
             }
 
-            _clustersUpdating = true;
+            LabelPlaceManager.CurrentZoom = (int)_gMap.Zoom;
 
             var ls = Layers;
             var showLabel = ShowLabel;
 
-            new Task(() => {
+            foreach (var l in ls) {
+                l.UpdateClusters();
+            }
 
-                foreach (var l in ls)
-                    l.UpdateClusters();
+            if (showLabel) {
+                LabelPlaceManager.PlaceLabels(_gMap.Markers.Where(m => m is MapMarker && ((MapMarker)m).IsVisible).Select(m => (MapMarker)m).ToList());
+            }
 
-                if (showLabel) {
-                    LabelPlaceHelper.PlaceLabels(_gMap.Markers.Where(m => m is MapMarker && ((MapMarker)m).IsVisible).Select(m => (MapMarker)m).ToList());
-                }
-
-                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
-                    OnMapResolutionChanged();
-                    ZoomLevel = (int) _gMap.Zoom;
-                    OnZoomChanged();
-                    _clustersUpdating = false;
-
-                    if (_needClustersUpdating) {
-                        _needClustersUpdating = false;
-                        _gMap_OnMapZoomChanged();
-                    }
-                }));
-            }).Start();
-
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
+                OnMapResolutionChanged();
+                ZoomLevel = (int)_gMap.Zoom;
+                OnZoomChanged();
+            }));
         }
         
         void _gMap_LayoutUpdated(object sender, EventArgs e) {
@@ -229,17 +215,7 @@ namespace Nordwest.Wpf.Controls
         public void ActivateAddMarkerMonitor() {
             _addMarkerMonitor.Activate();
         }
-
-        public void SelectMarker(MapMarker mapMarker, bool keepPrev)
-        {
-            if (!keepPrev)
-            {
-                SelectedItems.Clear();
-            }
-            if (!SelectedItems.Contains(mapMarker.Data))
-                SelectedItems.Add(mapMarker.Data);
-        }
-
+        
         private class OneTimeMointor
         {
             private bool _isActive;
@@ -309,7 +285,7 @@ namespace Nordwest.Wpf.Controls
                 return;
 
             var rect = GetRectOfAllMarkers();
-            //var rect = _gMap.GetRectOfAllMarkers(null);
+
             if (rect.HasValue &&
                 !double.IsNaN(rect.Value.Lat) && !double.IsInfinity(rect.Value.Lat) &&
                 !double.IsNaN(rect.Value.Lng) && !double.IsInfinity(rect.Value.Lng) &&
@@ -405,50 +381,6 @@ namespace Nordwest.Wpf.Controls
         public ObservableCollection<IGMapElementsLayer> Layers {
             get { return (ObservableCollection<IGMapElementsLayer>)GetValue(LayersProperty); }
             set { SetValue(LayersProperty, value); }
-        }
-
-        private static readonly DependencyPropertyKey SelectedItemsPropertyKey =
-            DependencyProperty.RegisterReadOnly("SelectedItems", typeof(ObservableCollection<object>), typeof(MapControl), new FrameworkPropertyMetadata(new ObservableCollection<object>()));
-        public static readonly DependencyProperty SelectedItemsProperty = SelectedItemsPropertyKey.DependencyProperty;
-        
-        private void SelectedItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (Layers == null)
-                return;
-            foreach (var l in Layers.OfType<MapMarkersLayer>()) {
-                if (l.MarkersTree == null)
-                    return;
-
-                switch (e.Action) {
-                    case NotifyCollectionChangedAction.Add:
-                        foreach (var item in e.NewItems) {
-                            var mapMarker = l.MarkersTree.Clusters.SelectMany(c => c).FirstOrDefault(m => m.Data == item);
-                            if (mapMarker != null)
-                                mapMarker.IsSelected = true;
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        foreach (var item in e.OldItems) {
-                            var mapMarker = l.MarkersTree.Clusters.SelectMany(c => c).FirstOrDefault(m => m.Data == item);
-                            if (mapMarker != null)
-                                mapMarker.IsSelected = false;
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Reset:
-                        foreach (var mapMarker in l.MarkersTree.Clusters.SelectMany(c => c))
-                            mapMarker.IsSelected = false;
-                        SelectedItemsCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, SelectedItems));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            LabelPlaceHelper.PlaceLabels(_gMap.Markers.Where(m => m is MapMarker && ((MapMarker) m).IsVisible)
-                .Select(m => (MapMarker) m).ToList());
-        }
-
-        public ObservableCollection<object> SelectedItems {
-            get { return (ObservableCollection<object>)GetValue(SelectedItemsProperty); }
         }
         
         public static readonly DependencyProperty ShowLabelProperty =
@@ -627,6 +559,8 @@ namespace Nordwest.Wpf.Controls
         public event EventHandler GMapControlSet;
 
         public Canvas UpperLayer => _upperLayer;
+        
+        public LabelPlaceManager LabelPlaceManager { get; }
 
     }
 }

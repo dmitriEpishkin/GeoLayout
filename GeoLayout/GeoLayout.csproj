@@ -227,5 +227,16 @@
     <Resource Include="Images\grid-32.png" />
     <Resource Include="Images\profile-32.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\more.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\addPoint.png" />
+    <Resource Include="Images\shift.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\parallelogram.png" />
+    <Resource Include="Images\polygon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

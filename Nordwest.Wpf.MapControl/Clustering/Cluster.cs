@@ -24,6 +24,13 @@ namespace Nordwest.Wpf.Controls.Clustering {
             marker.IsInGroup = true;
         }
 
+        public void ApplyClusterToMarkers() {
+            _primaryMarker.IsInGroup = false;
+            foreach (var m in _children) {
+                m.IsInGroup = true;
+            }
+        }
+
         public RectLatLng Bounds {
             get { return _bounds; }
         }

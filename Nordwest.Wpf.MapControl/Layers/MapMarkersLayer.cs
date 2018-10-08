@@ -4,6 +4,7 @@ using Nordwest.Wpf.Controls.Layers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -17,12 +18,29 @@ namespace Nordwest.Wpf.Controls {
         
         protected MapControl _mapControl;
         protected GMapControl _gMap;
-
-        private int _clusteringXSize = 20;
-        private int _clusteringYSize = 20;
+        
+        private bool _needToUpdateClusteringSize = false;
+        private int _clusteringXSize = 0;
+        private int _clusteringYSize = 0;
         private MarkerClusterer _clusterer;
         
         private int _lastInd = 0;
+        
+        private bool _isSleeping = true;
+        public void Sleep() {
+            if (!_isSleeping) {
+                SelectedItems.CollectionChanged -= SelectedItemsCollectionChanged;
+                _isSleeping = true;
+            }
+        }
+
+        public void WakeUp() {
+            if (_isSleeping) {
+                SelectedItems.CollectionChanged += SelectedItemsCollectionChanged;
+                SelectedItemsCollectionChanged(SelectedItems, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                _isSleeping = false;
+            }
+        }
 
         private MapMarker CreateMarker(object sourceItem) {
             var template = ItemTemplateSelector != null
@@ -49,12 +67,20 @@ namespace Nordwest.Wpf.Controls {
                 container.LabelContent = labelTemplate.LoadContent() as FrameworkElement;
 
             var marker = new MapMarker(container);
-            marker.MouseDown += (sender, args) => _mapControl.SelectMarker((MapMarker)sender,
+            marker.MouseDown += (sender, args) => SelectMarker((MapMarker)sender,
                              Keyboard.IsKeyDown(Key.LeftShift) || (Keyboard.IsKeyDown(Key.RightShift) ||
                              Keyboard.IsKeyDown(Key.LeftCtrl) || (Keyboard.IsKeyDown(Key.RightCtrl))));
             return marker;
         }
-        
+
+        public void SelectMarker(MapMarker mapMarker, bool keepPrev) {
+            if (!keepPrev) {
+                SelectedItems.Clear();
+            }
+            if (!SelectedItems.Contains(mapMarker.Data))
+                SelectedItems.Add(mapMarker.Data);
+        }
+
         private void AddMarkers(IEnumerable sourceItems, bool afterReset) {
             var source = sourceItems.Cast<object>().ToList();
             if (!source.Any())
@@ -159,6 +185,9 @@ namespace Nordwest.Wpf.Controls {
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            _mapControl.LabelPlaceManager.Reset();
+            _mapControl.LabelPlaceManager.PlaceLabels(_gMap.Markers.OfType<MapMarker>().Where(m => m.IsVisible).ToList());
         }
 
         public void ResetLayer() {
@@ -170,7 +199,10 @@ namespace Nordwest.Wpf.Controls {
             "LayerIsVisible", typeof(bool), typeof(MapMarkersLayer), new FrameworkPropertyMetadata(true, LayerIsVisibleChanged));
 
         private static void LayerIsVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs) {
-            ((MapMarkersLayer)d).ResetLayer();
+            var layer = (MapMarkersLayer)d;
+            layer.ResetLayer();
+            layer._needToUpdateClusteringSize = true;
+            layer.UpdateClusters();
         }
 
         public bool LayerIsVisible {
@@ -179,6 +211,9 @@ namespace Nordwest.Wpf.Controls {
         }
         
         public void UpdateClusters() {
+            if (_clusterer.Markers.Count != 0 && (_clusteringXSize == 0 || _clusteringYSize == 0)) {
+                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(UpdateClusteringGridSize));
+            }
             _clusterer.UpdateClusters(_clusteringXSize, _clusteringYSize);
         }
         
@@ -218,6 +253,8 @@ namespace Nordwest.Wpf.Controls {
                 if (oldCollection != null)
                     oldCollection.CollectionChanged -= control.ItemCollectionChanged;
             }
+
+            control._mapControl?.LabelPlaceManager.Reset();
         }
         
         public static readonly DependencyProperty ItemTemplateProperty =
@@ -262,14 +299,54 @@ namespace Nordwest.Wpf.Controls {
             "LabelTemplateSelector", typeof(DataTemplateSelector), typeof(MapMarkersLayer), new FrameworkPropertyMetadata(default(DataTemplateSelector), LabelTemplateSelectorChanged));
 
         private static void LabelTemplateSelectorChanged(DependencyObject d, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs) {
-            //((MapControl)d).ItemCollectionChanged(d, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+           
         }
 
         public DataTemplateSelector LabelTemplateSelector {
             get { return (DataTemplateSelector)GetValue(LabelTemplateSelectorProperty); }
             set { SetValue(LabelTemplateSelectorProperty, value); }
         }
-                
+
+        private static readonly DependencyPropertyKey SelectedItemsPropertyKey =
+            DependencyProperty.RegisterReadOnly("SelectedItems", typeof(ObservableCollection<object>), typeof(MapControl), new FrameworkPropertyMetadata(new ObservableCollection<object>()));
+        public static readonly DependencyProperty SelectedItemsProperty = SelectedItemsPropertyKey.DependencyProperty;
+
+        private void SelectedItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (MarkersTree == null)
+                return;
+
+            switch (e.Action) {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (var item in e.NewItems) {
+                        var mapMarker = MarkersTree.Clusters.SelectMany(c => c).FirstOrDefault(m => m.Data == item);
+                        if (mapMarker != null)
+                            mapMarker.IsSelected = true;
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (var item in e.OldItems) {
+                        var mapMarker = MarkersTree.Clusters.SelectMany(c => c).FirstOrDefault(m => m.Data == item);
+                        if (mapMarker != null)
+                            mapMarker.IsSelected = false;
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    foreach (var mapMarker in MarkersTree.Clusters.SelectMany(c => c))
+                        mapMarker.IsSelected = false;
+                    SelectedItemsCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, SelectedItems));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+        }
+
+        public ObservableCollection<object> SelectedItems {
+            get { return (ObservableCollection<object>)GetValue(SelectedItemsProperty); }
+        }
+
         public int LastElementIndex {
             get { return _lastInd; }
             set {

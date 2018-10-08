@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using GMap.NET.WindowsPresentation;
+using Nordwest.Wpf.Controls.Labels;
 
 namespace Nordwest.Wpf.Controls
 {

@@ -4,30 +4,99 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GeoLayout.Views"
+             xmlns:namingScheme="clr-namespace:GeoLayout.NamingScheme"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <StackPanel.Resources>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/GeoLayoutTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.Resources>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        </StackPanel.Resources>
+        </Grid.Resources>
 
-        <TextBlock Margin="3" Text="Имя профиля:"/>
-        <TextBox Margin="3" Text="{Binding ProfileName}"/>
-        <TextBlock Margin="3" Text="Шаг по профилю:"/>
-        <TextBox Margin="3" Text="{Binding StepMeters}"/>
-        <TextBlock Margin="3" Text="Индекс первого пикета:"/>
-        <TextBox Margin="3" Text="{Binding StartIndex}"/>
-        <TextBlock Margin="3" Text="Инкремент при именовании пикетов:"/>
-        <TextBox Margin="3" Text="{Binding IndexIncrement}"/>
-        <TextBlock Margin="3" Text="Количество цифр в номере пикета:"/>
-        <TextBox Margin="3" Text="{Binding Digits}"/>
-        <TextBlock Margin="3" Text="Схема именования:"/>
-        <ComboBox Margin="3" ItemsSource="{Binding ProfileNamingSchemes}" SelectedItem="{Binding SelectedNamingScheme}"/>
-        <StackPanel Visibility="{Binding PrefixSuffixSystemInUse, Converter={StaticResource BooleanToVisibilityConverter}}" Orientation="Vertical">
-            <TextBlock Margin="3" Text="Префикс:"/>
-            <TextBox Margin="3" Text="{Binding Prefix}"/>
-            <TextBlock Margin="3" Text="Суффикс:"/>
-            <TextBox Margin="3" Text="{Binding Suffix}"/>
-        </StackPanel>
-    </StackPanel>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="Имя профиля:"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding ProfileName}" Width="50"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Text="Шаг по профилю:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding StepMeters}" Width="50"/>
+
+        </Grid>
+
+        <Expander Grid.Row="1" Margin="0,6,0,3">
+            <Expander.Header>
+                <TextBlock Text="Расширенные настройки" FontWeight="Bold"/>
+            </Expander.Header>
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="3" Text="Индекс первого пикета:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding StartIndex}" Width="50"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="3" Text="Шаг при именовании:"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Margin="3" Text="{Binding IndexIncrement}" Width="50"/>
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="3" Text="Цифр в номере пикета:"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Margin="3" Text="{Binding Digits}" Width="50"/>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" Margin="3" Text="Именование:"/>
+                <ComboBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" ItemsSource="{Binding ProfileNamingSchemes}" SelectedItem="{Binding SelectedNamingScheme}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="namingScheme:ProfileNamingScheme">
+                            <TextBlock Text="{Binding SchemeName}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding PrefixSuffixSystemInUse, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="Префикс:"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding Prefix}" Width="50"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Text="Суффикс:"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding Suffix}" Width="50"/>
+                </Grid>
+
+            </Grid>
+
+        </Expander>
+        
+    </Grid>
 </UserControl>

@@ -142,7 +142,7 @@ namespace GeoLayout.Views
 
             PolygonToolLayer.MapControl = Map;
 
-            Map.SelectedItems.CollectionChanged += SelectedItems_CollectionChanged;
+            PointsLayer.SelectedItems.CollectionChanged += SelectedItems_CollectionChanged;
             _model.WaypointsService.SelectedWaypoints.CollectionChanged += SelectedWaypoints_CollectionChanged;
 
         }
@@ -152,19 +152,19 @@ namespace GeoLayout.Views
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                     foreach (var p in e.NewItems.OfType<Waypoint>())
-                        if (!Map.SelectedItems.Contains(p))
-                            Map.SelectedItems.Add(p);
+                        if (!PointsLayer.SelectedItems.Contains(p))
+                            PointsLayer.SelectedItems.Add(p);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var p in e.OldItems.OfType<Waypoint>())
-                        Map.SelectedItems.Remove(p);
+                        PointsLayer.SelectedItems.Remove(p);
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     throw new NotImplementedException();
                 case NotifyCollectionChangedAction.Move:
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    Map.SelectedItems.Clear();
+                    PointsLayer.SelectedItems.Clear();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

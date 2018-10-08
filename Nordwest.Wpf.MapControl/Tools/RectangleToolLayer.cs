@@ -32,6 +32,8 @@ namespace Nordwest.Wpf.Controls.Tools {
         private Line _l2;
         private Line _l1Add;
         private Line _l2Add;
+        private Line _l3Add;
+        private Line _l4Add;
 
         private Ellipse _a1;
         private Ellipse _a2;
@@ -57,6 +59,8 @@ namespace Nordwest.Wpf.Controls.Tools {
             _l2 = new Line { Stroke = _lineBrush, StrokeThickness = 3 };
             _l1Add = new Line {Stroke = _lineBrush, StrokeThickness = 3, StrokeDashArray = new DoubleCollection(new[] {3.0, 3.0})};
             _l2Add = new Line { Stroke = _lineBrush, StrokeThickness = 3, StrokeDashArray = new DoubleCollection(new[] { 3.0, 3.0 }) };
+            _l3Add = new Line { Stroke = _lineBrush, StrokeThickness = 3, StrokeDashArray = new DoubleCollection(new[] { 3.0, 3.0 }) };
+            _l4Add = new Line { Stroke = _lineBrush, StrokeThickness = 3, StrokeDashArray = new DoubleCollection(new[] { 3.0, 3.0 }) };
 
             _a1 = new Ellipse { Width = 12, Height = 12, Fill = Brushes.White, Stroke = Brushes.Black, StrokeThickness = 1, Margin = new Thickness(-6) };
             _a2 = new Ellipse { Width = 12, Height = 12, Fill = Brushes.White, Stroke = Brushes.Black, StrokeThickness = 1, Margin = new Thickness(-6) };
@@ -244,10 +248,20 @@ namespace Nordwest.Wpf.Controls.Tools {
 
             var p = GetAdditionalPoint();
 
+            double Interpolate(double v1, double v2, double part) {
+                return v1 + (v2 - v1) * part;
+            }
+
             UpdateLinePosition(_l1, _pCenter, _p1);
             UpdateLinePosition(_l2, _pCenter, _p2);
             UpdateLinePosition(_l1Add, _p1, p);
-            UpdateLinePosition(_l2Add, _p2, p);
+            UpdateLinePosition(_l2Add, 
+                new Point(Interpolate(_pCenter.X, _p1.X, 0.33), Interpolate(_pCenter.Y, _p1.Y, 0.33)),
+                new Point(Interpolate(_p2.X, p.X, 0.33), Interpolate(_p2.Y, p.Y, 0.33)));
+            UpdateLinePosition(_l3Add, _p2, p);
+            UpdateLinePosition(_l4Add,
+                new Point(Interpolate(_pCenter.X, _p1.X, 0.66), Interpolate(_pCenter.Y, _p1.Y, 0.66)),
+                new Point(Interpolate(_p2.X, p.X, 0.66), Interpolate(_p2.Y, p.Y, 0.66)));
 
             UpdatePanelPosition();
         }
@@ -281,6 +295,8 @@ namespace Nordwest.Wpf.Controls.Tools {
                 _mapControl.UpperLayer.Children.Add(_l2);
                 _mapControl.UpperLayer.Children.Add(_l1Add);
                 _mapControl.UpperLayer.Children.Add(_l2Add);
+                _mapControl.UpperLayer.Children.Add(_l3Add);
+                _mapControl.UpperLayer.Children.Add(_l4Add);
 
                 _mapControl.UpperLayer.Children.Add(_a1);
                 _mapControl.UpperLayer.Children.Add(_a2);
@@ -312,7 +328,9 @@ namespace Nordwest.Wpf.Controls.Tools {
             _mapControl.UpperLayer.Children.Remove(_l2);
             _mapControl.UpperLayer.Children.Remove(_l1Add);
             _mapControl.UpperLayer.Children.Remove(_l2Add);
-            
+            _mapControl.UpperLayer.Children.Remove(_l3Add);
+            _mapControl.UpperLayer.Children.Remove(_l4Add);
+
             _mapControl.UpperLayer.Children.Remove(_panel);
         }
 

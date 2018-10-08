@@ -78,6 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DistanceHelper.cs" />
+    <Compile Include="Labels\LabelPlace.cs" />
+    <Compile Include="Labels\LabelPlaceManager.cs" />
+    <Compile Include="Labels\LabelRect.cs" />
+    <Compile Include="Labels\MarkerSpace.cs" />
     <Compile Include="Layers\IGMapElementsLayer.cs" />
     <Compile Include="InternalPanels\MapToolPanel.cs" />
     <Compile Include="RotationHelper.cs" />
@@ -92,7 +96,6 @@
     <Compile Include="Clustering\Cluster.cs" />
     <Compile Include="Clustering\MarkerClusterer.cs" />
     <Compile Include="GroupQuadTree.cs" />
-    <Compile Include="LabelPlaceHelper.cs" />
     <Compile Include="MapControl.cs" />
     <Compile Include="MapMarker.cs" />
     <Compile Include="MapMarkerContainer.cs" />
