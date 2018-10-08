@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="GeoLayout.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoLayout.Views"
+             xmlns:converters="clr-namespace:GeoLayout.Converters"
+             xmlns:settingEnums="clr-namespace:GeoLayout.SettingEnums"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel.Resources>
+            <converters:EqualsConverter x:Key="Equals"/>
+        </StackPanel.Resources>
+        
+        <TextBlock Margin="3" Text="Формат координат:"/>
+        <StackPanel>
+            <RadioButton Margin="3" Content="Градусы" IsChecked="{Binding CoordinatesRepresentationType, ConverterParameter={x:Static settingEnums:CoordinatesRepresentationType.Degrees}, Converter={StaticResource Equals}}"/>
+            <RadioButton Margin="3" Content="Градусы, минуты, секунды" IsChecked="{Binding CoordinatesRepresentationType, ConverterParameter={x:Static settingEnums:CoordinatesRepresentationType.DegMinSec}, Converter={StaticResource Equals}}"/>
+            <RadioButton Margin="3" Content="Метры" IsChecked="{Binding CoordinatesRepresentationType, ConverterParameter={x:Static settingEnums:CoordinatesRepresentationType.Meters}, Converter={StaticResource Equals}}"/>
+        </StackPanel>
+        
+    </StackPanel>
+</UserControl>

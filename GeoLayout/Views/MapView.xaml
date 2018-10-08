@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="GeoLayout.Views.MapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoLayout.Views"
+             xmlns:controls="clr-namespace:Nordwest.Wpf.Controls;assembly=Nordwest.Wpf.MapControl"
+             xmlns:geoLayout="clr-namespace:GeoLayout"
+             xmlns:data="clr-namespace:GeoLayout.Domain.Data;assembly=GeoLayout.Domain"
+             xmlns:layers="clr-namespace:Nordwest.Wpf.Controls.Layers;assembly=Nordwest.Wpf.MapControl"
+             xmlns:tools="clr-namespace:Nordwest.Wpf.Controls.Tools;assembly=Nordwest.Wpf.MapControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="0,2,0,-2.4">
+        <Grid.Resources>
+
+            <SolidColorBrush x:Key="WhiteColor" Color="White"/>
+            <SolidColorBrush x:Key="SelectedColor" Color="#BEE6FD"/>
+
+            <Style x:Key="MapToggleButton" TargetType="ToggleButton">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="Opacity" Value="0.5"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="2">
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="Gray"/>
+                                </Border.BorderBrush>
+
+                                <ContentPresenter/>
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource WhiteColor}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="Checked">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SelectedColor}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
+                            </Border>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Opacity" Value="1"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <geoLayout:DoubleToPointLatLngConverter x:Key="DoubleToLatLongConverter"/>
+            <DataTemplate x:Key="PointItemTemplate" DataType="{x:Type data:Waypoint}">
+                <Grid Margin="-5,-5">
+                    <Polygon Stroke="Black" StrokeThickness="0.5" Fill="White" SnapsToDevicePixels="True" 
+                             Points="4,0 6,0 6,4  10,4 10,6 6,6 6,10 4,10 4,6 0,6 0,4 4,4">
+                    </Polygon>
+                    <controls:MapControl.PointLatLong>
+                        <MultiBinding Converter="{StaticResource DoubleToLatLongConverter}">
+                            <Binding Path="Location.Latitude" />
+                            <Binding Path="Location.Longitude" />
+                        </MultiBinding>
+                    </controls:MapControl.PointLatLong>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="PointLabelTemplate" DataType="{x:Type data:Waypoint}">
+                <Border Name="label" CornerRadius="3" Height="20">
+                    <Border.Background>
+                        <RadialGradientBrush Center="0.5, 0.5" RadiusX="0.7" RadiusY="0.7">
+                            <GradientStop Offset="0" Color="White"></GradientStop>
+                            <GradientStop Offset="0.5" Color="#AAFFFFFF"></GradientStop>
+                            <GradientStop Offset="1" Color="Transparent"></GradientStop>
+                        </RadialGradientBrush>
+                    </Border.Background>
+
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3" Text="{Binding Name}"/>
+
+                </Border>
+            </DataTemplate>
+
+        </Grid.Resources>
+
+
+        <controls:MapMarkersLayer x:Name="PointsLayer"
+                                  LayerIsVisible="True"
+                                  ItemsSource="{Binding WaypointsService.VisibleWaypoints}"
+                                  ItemTemplate="{StaticResource PointItemTemplate}"
+                                  LabelTemplate="{StaticResource PointLabelTemplate}">
+            <controls:MapMarkersLayer.MarkerContainerStyle>
+                <Style TargetType="controls:MapMarkerContainer">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="controls:MapMarkerContainer">
+                                <ControlTemplate.Resources>
+                                    <DropShadowEffect x:Key="DropShadowEffect" Color="Red" BlurRadius="10"  ShadowDepth="0"/>
+                                </ControlTemplate.Resources>
+                                <Canvas>
+                                    <ContentPresenter/>
+                                    <ContentPresenter Name="LabelContent" Content="{TemplateBinding LabelContent}" Canvas.Left="0" Canvas.Top="0" />
+                                </Canvas>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Effect" Value="{StaticResource DropShadowEffect}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="LabelOffset" Value="10,-10"></Setter>
+                </Style>
+            </controls:MapMarkersLayer.MarkerContainerStyle>
+        </controls:MapMarkersLayer>
+
+        <layers:MapRulerLayer x:Name="MapRuler"/>
+        <tools:AddPointLayer x:Name="AddPointLayer"/>
+        <tools:ShiftPointLayer x:Name="ShiftPointLayer"/>
+        <tools:RouteToolLayer x:Name="MultiRulerToolLayer"/>
+        <tools:RouteToolLayer x:Name="RouteToolLayer"/>
+        <tools:RectangleToolLayer x:Name="RectangleToolLayer"/>
+        <tools:PolygonToolLayer x:Name="PolygonToolLayer"/>
+
+        <controls:MapControl x:Name="Map">
+            <controls:MapControl.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, local:MapView, 1}, Path=ShowAllCommand}" />
+            </controls:MapControl.InputBindings>
+        </controls:MapControl>
+
+        <StackPanel Orientation="Horizontal">
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=AddPointLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Добавить точку">
+                <Image Source="../Images/waypoint.png" Width="28" Height="28"/>
+            </ToggleButton>
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=ShiftPointLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Сместить точку">
+                <Image Source="../Images/waypoint.png" Width="28" Height="28"/>
+            </ToggleButton>
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=MultiRulerToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Измерить расстояние">
+                <Image Source="../Images/ruler.png" Width="28" Height="28"/>
+            </ToggleButton>
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=RouteToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Проектировать профиль">
+                <Image Source="../Images/profile-32.png" Width="28" Height="28"/>
+            </ToggleButton>
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=RectangleToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Проектировать сетку в границах параллелограмма">
+                <Image Source="../Images/grid-32.png" Width="28" Height="28"/>
+            </ToggleButton>
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=PolygonToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Проектировать сетку в границах многоугольника">
+                <Image Source="../Images/grid-32.png" Width="28" Height="28"/>
+            </ToggleButton>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

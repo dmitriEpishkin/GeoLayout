@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{035CE569-16A1-49DC-89DF-B2DBD0DF6CBF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nordwest</RootNamespace>
+    <AssemblyName>Nordwest.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accessors.cs" />
+    <Compile Include="Collections\DispatcheredObservableCollection.cs" />
+    <Compile Include="Collections\FilteredObservableCollection.cs" />
+    <Compile Include="Collections\Mapping.cs" />
+    <Compile Include="Default.cs" />
+    <Compile Include="Notifications\CollectionChangingEventArgs.cs" />
+    <Compile Include="Notifications\ICollectionChangeEventArgs.cs" />
+    <Compile Include="Notifications\INotifyCollectionChanging.cs" />
+    <Compile Include="Notifications\INotifyCollectionChanged.cs" />
+    <Compile Include="Collections\PropertyChangedMultiplexor.cs" />
+    <Compile Include="Collections\Synchronization\CollectionSynchronizer`1.cs" />
+    <Compile Include="Collections\Synchronization\Synchronize.cs" />
+    <Compile Include="Collections\Synchronization\ObjectSynchronizer`1.cs" />
+    <Compile Include="Collections\Synchronization\CollectionSynchronizer`3.cs" />
+    <Compile Include="Collections\Synchronization\ObjectSynchronizer`2.cs" />
+    <Compile Include="Collections\PreviewObservableCollection.cs" />
+    <Compile Include="Collections\TransactiveObservableCollection.cs" />
+    <Compile Include="Collections\ObservableRangeCollection.cs" />
+    <Compile Include="Collections\ReadOnlyDictionary.cs" />
+    <Compile Include="Collections\Synchronization\ObjectBinder.cs" />
+    <Compile Include="Collections\Synchronization\ObjectSynchronizer`3.cs" />
+    <Compile Include="Collections\Synchronization\CollectionSynchronizer`2.cs" />
+    <Compile Include="Linq.cs" />
+    <Compile Include="EventArgs.cs" />
+    <Compile Include="Notifications\CollectionChangeEventArgs.cs" />
+    <Compile Include="Notifications\PropertyValueChangedEventArgs.cs" />
+    <Compile Include="Notifications\PropertyValueChangingEventArgs.cs" />
+    <Compile Include="OperationResult.cs" />
+    <Compile Include="OperationStatus.cs" />
+    <Compile Include="ProgressNotifier.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="ReadOnlyListEx.cs" />
+    <Compile Include="ReflectionPropertyHelper.cs" />
+    <Compile Include="SimpleMonitor.cs" />
+    <Compile Include="System.Collections.Immutable\IImmutableList.cs" />
+    <Compile Include="System.Collections.Immutable\AllocFreeConcurrentStack.cs" />
+    <Compile Include="System.Collections.Immutable\RefAsValueType.cs" />
+    <Compile Include="System.Collections.Immutable\IBinaryTree.cs" />
+    <Compile Include="System.Collections.Immutable\ImmutableExtensions.cs" />
+    <Compile Include="System.Collections.Immutable\IImmutableListQueries.cs" />
+    <Compile Include="System.Collections.Immutable\ImmutableListHelper.cs" />
+    <Compile Include="System.Collections.Immutable\IReadOnlyList.cs" />
+    <Compile Include="System.Collections.Immutable\IReadOnlyCollection.cs" />
+    <Compile Include="System.Collections.Immutable\ImmutableList.cs" />
+    <Compile Include="System.Collections.Immutable\IOrderedCollection.cs" />
+    <Compile Include="System.Collections.Immutable\Requires.cs" />
+    <Compile Include="System.Collections.Immutable\SecurePooledObject.cs" />
+    <Compile Include="System.Collections.Immutable\ISecurePooledObjectUser.cs" />
+    <Compile Include="System.Collections.Immutable\SecureObjectPool.cs" />
+    <Compile Include="System.Collections.Immutable\ValidatedNotNullAttribute.cs" />
+    <Compile Include="TimeSeries\ITimeSeries.cs" />
+    <Compile Include="TimeSeries\TimeSeriesJoinUtil.cs" />
+    <Compile Include="TimeSeries\TimeSeriesBase.cs" />
+    <Compile Include="Requires.cs" />
+    <Compile Include="ValueTuple.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

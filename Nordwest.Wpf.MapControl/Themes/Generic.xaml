@@ -1,0 +1,167 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:windowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
+    xmlns:controls="clr-namespace:Nordwest.Wpf.Controls">
+    
+    <Style TargetType="controls:MapControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:MapControl">
+                    <ControlTemplate.Resources>
+                        <Style x:Key="AutoOpacityChangeWhenMouseOverStyleKey" TargetType="Control">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="False">
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ControlTemplate.Resources>
+                    
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <windowsPresentation:GMapControl 
+                                Name="GMapControl" 
+                                MapProvider="{TemplateBinding MapProvider}" 
+                                ShowTileGridLines="False"
+                                LevelsKeepInMemmory = "12"
+                                MinZoom="3"
+                                MaxZoom="18" 
+                                Zoom="{Binding ElementName=Zoom, Path=Value,Mode=TwoWay}"
+                                FillEmptyTiles="True"
+                                MouseWheelZoomType="MousePositionWithoutCenter" />
+
+                            <Canvas Name="UpperLayer"/>
+
+                            <controls:ScaleRulerControl
+                                x:Name="ScaleRuler"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="10" />
+
+                            <Grid HorizontalAlignment="Right" Margin="20" VerticalAlignment="Top" Height="300">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <controls:ZoomControl x:Name="Zoom"
+                                    Minimum="1" Maximum="20" Value="4"
+                                    LargeChange="1" SmallChange="1"
+                                    MinHeight="50"
+                                    TicksFrequency="1"
+                                    VerticalAlignment="Stretch"
+                                    Style="{StaticResource AutoOpacityChangeWhenMouseOverStyleKey}"
+                                    Background="#01FFFFFF">
+                                    <controls:ZoomControl.LayoutTransform>
+                                        <RotateTransform Angle="180"/>
+                                    </controls:ZoomControl.LayoutTransform>
+                                </controls:ZoomControl>
+                                
+                                <StackPanel x:Name="ShowAll" Grid.Row="1">
+                                    <Button HorizontalAlignment="Center" Margin="2" 
+                                        Width="28" 
+                                        Height="{Binding Path=ActualWidth, RelativeSource={RelativeSource Self}}" Padding="2"
+                                        Command="{TemplateBinding ShowAllCommand}"
+                                        Focusable="False"
+                                        Style="{StaticResource AutoOpacityChangeWhenMouseOverStyleKey}"
+                                        ToolTip="Show all">
+                                        
+                                        <Path Data="M-10,0 L -10,-10 L0,-10 M 10,10  M10,0 L 10,10 L0,10"
+                                              HorizontalAlignment="Center"
+                                              Stroke="Black"
+                                              Stretch="Fill"
+                                              StrokeThickness="2" />
+                                        
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+    </Style>
+    <Style TargetType="controls:MapMarkersLayer">
+        <Setter Property="MarkerContainerStyle">
+            <Setter.Value>
+                <Style TargetType="controls:MapMarkerContainer">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="controls:MapMarkerContainer">
+                                <ControlTemplate.Resources>
+                                    <DropShadowEffect x:Key="DropShadowEffect" Color="Red" BlurRadius="10"  ShadowDepth="0"/>
+                                </ControlTemplate.Resources>
+                                <Canvas>
+                                    <ContentPresenter />
+                                    <ContentPresenter Name="LabelContent" Content="{TemplateBinding LabelContent}" Canvas.Left="0" Canvas.Top="0" />
+                                    <Rectangle Canvas.Left="-1" Canvas.Right="-1" Width="3" Height="3" Fill="Red" />
+                                </Canvas>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Effect" Value="{StaticResource DropShadowEffect}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="controls:ScaleRulerControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:ScaleRulerControl">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{TemplateBinding RulerText}" Grid.Row="0" TextAlignment="Right" Grid.Column="1" Foreground="Black" HorizontalAlignment="Right"/>
+                            <TextBlock Text="{TemplateBinding RulerText}" Grid.Row="0" TextAlignment="Left" Grid.Column="0" Foreground="White" HorizontalAlignment="Left"/>
+                        </Grid>
+                        <Border Height="4" HorizontalAlignment="Stretch" Grid.Row="1" Background="#4499FF" BorderBrush="White" BorderThickness="1" Width="{TemplateBinding RulerWidth}"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="controls:ZoomControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:ZoomControl">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <RepeatButton HorizontalAlignment="Center" Margin="2" Width="20" Height="20"
+                            x:Name="PART_Plus" Focusable="False" Grid.Row="0" ClickMode="Press" Delay="300" Interval="300">
+                            <Path Fill="Black" Data="M0,5 H10 M5,0 V10" HorizontalAlignment="Center" Stroke="Black" Stretch="Fill" StrokeThickness="2"></Path>
+                        </RepeatButton>
+                        <Slider
+                            x:Name="PART_Slider"
+                            Grid.Row="1"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            Height="Auto"
+                            Orientation="Vertical"
+                            Width="Auto"
+                            TickPlacement="Both"
+                            VerticalAlignment="Stretch" />
+
+                        <RepeatButton HorizontalAlignment="Center" Margin="2" Width="20" Height="20"
+                            x:Name="PART_Minus" Focusable="False" Grid.Row="2" ClickMode="Press" Delay="300" Interval="300">
+                                <Path Fill="Black" Data="M0,0 H10" HorizontalAlignment="Center" Stroke="Black" Stretch="Fill" StrokeThickness="2"></Path>
+                        </RepeatButton>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

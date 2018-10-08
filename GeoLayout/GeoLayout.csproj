@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E9B65ABA-5D86-497B-966D-1B364A56E245}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>GeoLayout</RootNamespace>
+    <AssemblyName>GeoLayout</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GMap.NET.Core">
+      <HintPath>..\External\GMap\GMap.NET.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GMap.NET.WindowsPresentation">
+      <HintPath>..\External\GMap\GMap.NET.WindowsPresentation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WpfApplicationFramework">
+      <HintPath>..\External\WpfApplicationFramework\WpfApplicationFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Converters\DoubleToLatLongConverter.cs" />
+    <Compile Include="Converters\EqualsConverter.cs" />
+    <Compile Include="Converters\NotConverter.cs" />
+    <Compile Include="Effects\ColorToneEffect.cs" />
+    <Compile Include="GeoLayoutTools\GridBuilder.cs" />
+    <Compile Include="GeoLayoutTools\IGeoLayoutTool.cs" />
+    <Compile Include="GeoLayoutTools\ProfileBuilder.cs" />
+    <Compile Include="GeoLayoutTools\RotateModifier.cs" />
+    <Compile Include="GeoLayoutTools\ShiftModifier.cs" />
+    <Compile Include="GeoLayoutTools\SingleWaypointBuilder.cs" />
+    <Compile Include="ResourceUtil.cs" />
+    <Compile Include="Services\ConsoleInterpretatorService.cs" />
+    <Compile Include="Services\GeoLayoutService.cs" />
+    <Compile Include="Services\GroupsService.cs" />
+    <Compile Include="Services\SettingsService.cs" />
+    <Compile Include="SettingEnums\CoordinatesRepresentationType.cs" />
+    <Compile Include="ViewElements\CoordinatesView.xaml.cs">
+      <DependentUpon>CoordinatesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewElements\LatLongTextBox.cs" />
+    <Compile Include="ViewModels\BuilderViewModel.cs" />
+    <Compile Include="ViewModels\GeoLocationViewModel.cs" />
+    <Compile Include="ViewModels\GroupsViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Services\WaypointsService.cs" />
+    <Compile Include="ViewModels\MapViewModel.cs" />
+    <Compile Include="Views\AddPointMapView.xaml.cs">
+      <DependentUpon>AddPointMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewElements\CoordinatesReadOnlyView.xaml.cs">
+      <DependentUpon>CoordinatesReadOnlyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateGridMapView.xaml.cs">
+      <DependentUpon>CreateGridMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreatePolygonMapView.xaml.cs">
+      <DependentUpon>CreatePolygonMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateProfileMapView.xaml.cs">
+      <DependentUpon>CreateProfileMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GroupsView.xaml.cs">
+      <DependentUpon>GroupsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MapView.xaml.cs">
+      <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ShiftPointMapView.xaml.cs">
+      <DependentUpon>ShiftPointMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ToolsSetting.xaml.cs">
+      <DependentUpon>ToolsSetting.xaml</DependentUpon>
+    </Compile>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Templates\GeoLayoutToolsTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\GeoLayoutTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewElements\CoordinatesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddPointMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewElements\CoordinatesReadOnlyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreateGridMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreatePolygonMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreateProfileMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GroupsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ShiftPointMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ToolsSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Resource Include="Effects\ColorTone.ps" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeoLayout.Domain\GeoLayout.Domain.csproj">
+      <Project>{d3e1f2be-214a-4fc7-af09-8d613af2862c}</Project>
+      <Name>GeoLayout.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nordwest.Core\Nordwest.Core.csproj">
+      <Project>{035CE569-16A1-49DC-89DF-B2DBD0DF6CBF}</Project>
+      <Name>Nordwest.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nordwest.Wpf.MapControl\Nordwest.Wpf.MapControl.csproj">
+      <Project>{5b4e215f-cf3d-404d-b021-535bcefdc2e9}</Project>
+      <Name>Nordwest.Wpf.MapControl</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ruler.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Check.png" />
+    <Resource Include="Images\Delete.png" />
+    <Resource Include="Images\icons8-eye-32.png" />
+    <Resource Include="Images\icons8-trash-can-24.png" />
+    <Resource Include="Images\waypoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\grid-32.png" />
+    <Resource Include="Images\profile-32.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
