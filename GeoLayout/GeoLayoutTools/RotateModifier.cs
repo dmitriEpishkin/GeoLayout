@@ -8,11 +8,6 @@ namespace GeoLayout.GeoLayoutTools {
     public class RotateModifier : Model, IGeoLayoutTool {
 
 
-        public DataTemplate GetTemplate() {
-            ResourceDictionary templates = ResourceUtil.GetRelativeResourceDictionary(@"Templates\GeoLayoutToolsTemplate.xaml");
-            return (DataTemplate)templates["RotateModifierTemplate"];
-        }
-
         public void Apply() {
 
         }

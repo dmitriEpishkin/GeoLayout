@@ -7,6 +7,13 @@ using GeoLayout.Domain.Data;
 
 namespace GeoLayout.Domain.IO {
     public class GpxImporter : IGeoImporter {
+
+        private readonly IFileTypeInfo _fileTypeInfo = new FileTypeInfo("GPX файл", ".GPX");
+
+        public IFileTypeInfo GetFileTypeInfo() {
+            return _fileTypeInfo;
+        }
+
         public List<Waypoint> ImportWaypoints(string fileName) {
             var doc = XDocument.Load(File.OpenRead(fileName));
             var root = doc.Root;

@@ -67,6 +67,7 @@
     <Compile Include="Converters\EqualsConverter.cs" />
     <Compile Include="Converters\NotConverter.cs" />
     <Compile Include="Effects\ColorToneEffect.cs" />
+    <Compile Include="GeoLayoutTools\CropModifier.cs" />
     <Compile Include="GeoLayoutTools\GridBuilder.cs" />
     <Compile Include="GeoLayoutTools\IGeoLayoutTool.cs" />
     <Compile Include="GeoLayoutTools\ProfileBuilder.cs" />
@@ -75,8 +76,12 @@
     <Compile Include="GeoLayoutTools\SingleWaypointBuilder.cs" />
     <Compile Include="NamingScheme\ProfileNamingScheme.cs" />
     <Compile Include="ResourceUtil.cs" />
+    <Compile Include="Services\ExportService.cs" />
     <Compile Include="Services\GeoLayoutBuildingService.cs" />
     <Compile Include="Services\GroupsService.cs" />
+    <Compile Include="Services\ImportService.cs" />
+    <Compile Include="Services\MultiFileDialogService.cs" />
+    <Compile Include="Services\SaveFileDialogService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="SettingEnums\CoordinatesRepresentationType.cs" />
     <Compile Include="ViewElements\CoordinatesView.xaml.cs">
@@ -102,6 +107,9 @@
     </Compile>
     <Compile Include="Views\CreateProfileMapView.xaml.cs">
       <DependentUpon>CreateProfileMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CropByPolygonMapView.xaml.cs">
+      <DependentUpon>CropByPolygonMapView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GroupsView.xaml.cs">
       <DependentUpon>GroupsView.xaml</DependentUpon>
@@ -152,6 +160,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CreateProfileMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CropByPolygonMapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -237,6 +249,10 @@
   <ItemGroup>
     <Resource Include="Images\parallelogram.png" />
     <Resource Include="Images\polygon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\open.png" />
+    <Resource Include="Images\save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

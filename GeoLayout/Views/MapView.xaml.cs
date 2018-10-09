@@ -27,6 +27,8 @@ namespace GeoLayout.Views
 
         private readonly Dictionary<Waypoint, GMapMarker> _markers = new Dictionary<Waypoint, GMapMarker>();
 
+        private readonly ResourceDictionary _resources = ResourceUtil.GetRelativeResourceDictionary(@"Themes\GeoLayoutTheme.xaml");
+
         public MapView()
         {
             InitializeComponent();
@@ -37,7 +39,6 @@ namespace GeoLayout.Views
             ShowAllCommand = new DelegateCommand(ShowAll, CanShowAll);
 
             Map.MapProvider = GMapProviders.BingSatelliteMap;
-
             
             Map.Layers = new ObservableCollection<IGMapElementsLayer>();
             Map.Layers.Clear();
@@ -45,20 +46,16 @@ namespace GeoLayout.Views
 
             ResourceDictionary res = ResourceUtil.GetRelativeResourceDictionary(@"Themes\GeoLayoutTheme.xaml");
 
-            AddPointLayer.AddPointUI = new AddPointMapView();
-            AddPointLayer.AddPointAction = lng => {
+            AddPointLayer.PanelUI = new AddPointMapView();
+            AddPointLayer.LayerAction = lng => {
                 _model.GeoLayoutBuildingService.WaypointBuilder.Latitude = lng.Lat;
                 _model.GeoLayoutBuildingService.WaypointBuilder.Longitude = lng.Lng;
                 _model.GeoLayoutBuildingService.WaypointBuilder.Apply();
             };
-
             AddPointLayer.IsActive = true;
             AddPointLayer.MapControl = Map;
 
-            AddPointLayer.Ok.Style = (Style)res["MapToolButtonStyle"];
-            AddPointLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
-            AddPointLayer.Close.Style = (Style)res["MapToolButtonStyle"];
-            AddPointLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
+            InitalizeLayerButtons(AddPointLayer);
 
             AddPointLayer.PropertyChanged += (sender, args) => {
                 if (args.PropertyName == "Point") {
@@ -97,7 +94,7 @@ namespace GeoLayout.Views
             var multiRulerTextBlock = new TextBlock() { Margin = new Thickness(3) };
             MultiRulerToolLayer.MapControl = Map;
             MultiRulerToolLayer.Ok.Visibility = Visibility.Collapsed;
-            MultiRulerToolLayer.Content = multiRulerTextBlock;
+            MultiRulerToolLayer.PanelUI = multiRulerTextBlock;
             MultiRulerToolLayer.Close.Style = (Style)res["MapToolButtonStyle"];
             MultiRulerToolLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
             MultiRulerToolLayer.RouteChanged += (sender, args) => {
@@ -117,14 +114,11 @@ namespace GeoLayout.Views
             };
 
             RouteToolLayer.MapControl = Map;
-            RouteToolLayer.Content = new CreateProfileMapView();
+            RouteToolLayer.PanelUI = new CreateProfileMapView();
             RouteToolLayer.RouteToolAction = points => {
                 _model.GeoLayoutBuildingService.ProfileBuilder.Build(points.ConvertAll(p => new Waypoint("", new GeoLocation(p.Lat, p.Lng, 0.0))));
             };
-            RouteToolLayer.Ok.Style = (Style)res["MapToolButtonStyle"];
-            RouteToolLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
-            RouteToolLayer.Close.Style = (Style)res["MapToolButtonStyle"];
-            RouteToolLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
+            InitalizeLayerButtons(RouteToolLayer);
 
             RectangleToolLayer.MapControl = Map;
             RectangleToolLayer.RectToolAction = (corner, p1, p2) => {
@@ -134,19 +128,35 @@ namespace GeoLayout.Views
                     new GeoLocation(p2.Lat, p2.Lng, 0)));
                 _model.GeoLayoutBuildingService.GridBuilder.Apply();
             };
-            RectangleToolLayer.Content = new CreateGridMapView();
-            RectangleToolLayer.Ok.Style = (Style)res["MapToolButtonStyle"];
-            RectangleToolLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
-            RectangleToolLayer.Close.Style = (Style)res["MapToolButtonStyle"];
-            RectangleToolLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
+            RectangleToolLayer.PanelUI = new CreateGridMapView();
+            InitalizeLayerButtons(RectangleToolLayer);
 
             PolygonToolLayer.MapControl = Map;
+            InitalizeLayerButtons(PolygonToolLayer);
+            PolygonToolLayer.PanelUI = new CropByPolygonMapView();
+            PolygonToolLayer.PolygonToolAction = lngs => {
+
+                var crop = _model.GeoLayoutBuildingService.CropModifier;
+
+                crop.PolygonVertices.Clear();
+
+                lngs.ConvertAll(l => new Waypoint("", new GeoLocation(l.Lat, l.Lng, 0)))
+                    .ForEach(wpt => crop.PolygonVertices.Add(wpt));
+
+                crop.Apply();
+            };
 
             PointsLayer.SelectedItems.CollectionChanged += SelectedItems_CollectionChanged;
             _model.WaypointsService.SelectedWaypoints.CollectionChanged += SelectedWaypoints_CollectionChanged;
 
         }
 
+        private void InitalizeLayerButtons(BaseCommandToolLayer layer) {
+            layer.Ok.Style = (Style)_resources["MapToolButtonStyle"];
+            layer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
+            layer.Close.Style = (Style)_resources["MapToolButtonStyle"];
+            layer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
+        }
 
         private void SelectedWaypoints_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             switch (e.Action) {

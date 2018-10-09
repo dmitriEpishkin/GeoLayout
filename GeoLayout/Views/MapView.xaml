@@ -151,7 +151,7 @@
             <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=RectangleToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Проектировать сетку в границах параллелограмма">
                 <Image Source="../Images/parallelogram.png" Width="28" Height="28"/>
             </ToggleButton>
-            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=PolygonToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Проектировать сетку в границах многоугольника">
+            <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=PolygonToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Обрезать по многоугольнику">
                 <Image Source="../Images/polygon.png" Width="28" Height="28"/>
             </ToggleButton>
         </StackPanel>

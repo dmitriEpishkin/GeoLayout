@@ -1,13 +1,17 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Waf.Applications.Services;
 using System.Xml.Linq;
 using GeoLayout.Domain.Data;
 
 namespace GeoLayout.Domain.IO {
     public class GpxExporter : IGeoExporter {
+
+        private readonly FileType _fileType = new FileType("GPX файл", ".GPX");
+
+        public FileType GetFileType() {
+            return _fileType;
+        }
 
         public void ExportWaypoints(string fileName, List<Waypoint> points) {
             

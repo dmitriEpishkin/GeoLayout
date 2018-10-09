@@ -170,9 +170,9 @@ namespace GeoLayout.ViewModels {
         }
 
         private void SetMetersRepresentation() {
-            var utm = WgsUtmConverter.LatLonToUTMXY(Location.Latitude, Location.Longitude, 0);
+            var utm = WgsUtmConverter.LatLonToUTMXY(Location, 0);
 
-            SetXYRepresentation(utm.Item2.ToString("F0"), utm.Item3.ToString("F0"), utm.Item1.ToString());
+            SetXYRepresentation(utm.X.ToString("F0"), utm.Y.ToString("F0"), utm.Zone.ToString());
         }
 
         private bool TrySetLocationFromMeters() {
@@ -183,10 +183,8 @@ namespace GeoLayout.ViewModels {
             if (zone < 1 || zone > 60)
                 return false;
 
-            var latLng = WgsUtmConverter.UTMXYToLatLon(x, y, zone, Location.Latitude < 0);
-
-            Location  = new GeoLocation(latLng.Item1, latLng.Item2, Location.Elevation);
-
+            Location = WgsUtmConverter.UTMXYToLatLon(new GeoLocationXY(zone, x, y, 0), Location.Latitude < 0);
+            
             return true;
         }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Waf.Foundation;
-using System.Windows;
 using GeoLayout.Domain;
 using GeoLayout.Domain.Data;
 using GeoLayout.NamingScheme;
@@ -47,11 +46,6 @@ namespace GeoLayout.GeoLayoutTools {
             SelectedNamingScheme = ProfileNamingSchemes[0];
 
             StartPoint = WaypointsService.Waypoints.FirstOrDefault();
-        }
-        
-        public DataTemplate GetTemplate() {
-            ResourceDictionary templates = ResourceUtil.GetRelativeResourceDictionary(@"Templates\GeoLayoutToolsTemplate.xaml");
-            return (DataTemplate) templates["ProfileBuilderTemplate"];
         }
         
         public void Apply() {

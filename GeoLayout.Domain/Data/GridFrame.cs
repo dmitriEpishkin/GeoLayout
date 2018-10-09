@@ -9,11 +9,11 @@ namespace GeoLayout.Domain.Data {
         }
 
         public double GetGridWidthMeters() {
-            return Corner.DistanceTo(P1);
+            return Corner.DistanceInMetersTo(P1);
         }
 
         public double GetProfileLengthMeters() {
-            return Corner.DistanceTo(P2);
+            return Corner.DistanceInMetersTo(P2);
         }
 
         public GeoLocation Corner { get; }

@@ -13,14 +13,16 @@ namespace GeoLayout.Services {
 
             ShiftModifier = new ShiftModifier();
             RotateModifier = new RotateModifier();
+            CropModifier = new CropModifier(waypointsService);
         }
         
         public SingleWaypointBuilder WaypointBuilder { get; }
         public ProfileBuilder ProfileBuilder { get; }
         public GridBuilder GridBuilder { get; }
-
+        
         public ShiftModifier ShiftModifier { get; }
         public RotateModifier RotateModifier { get; }
+        public CropModifier CropModifier { get; }
         
     }
 }

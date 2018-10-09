@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,15 +8,13 @@ using System.Windows.Shapes;
 using GMap.NET;
 
 namespace Nordwest.Wpf.Controls.Tools {
-    public class PolygonToolLayer : BaseToolLayer {
+    public class PolygonToolLayer : BaseCommandToolLayer {
         
         private List<PointLatLng> _latLng = new List<PointLatLng>();
         private List<Ellipse> _points = new List<Ellipse>();
 
         private List<Line> _segments = new List<Line>();
-
-        private MapToolPanel _panel;
-
+        
         private bool _canSetMark;
         private int _selectedEllipseIndex = -1;
 
@@ -26,20 +22,14 @@ namespace Nordwest.Wpf.Controls.Tools {
 
         private Brush _lineBrush = Brushes.Red;
 
-        public PolygonToolLayer() {
+        public PolygonToolLayer() : base(new MapToolPanel()) {
 
-            _panel = new MapToolPanel();
-
-            _panel.Ok.Click += Ok_Click;
-
-            _panel.Close.Click += (sender, args) => {
+            Panel.Ok.Click += Ok_Click;
+            Panel.Close.Click += (sender, args) => {
                 Reset();
             };
         }
         
-        public Button Ok => _panel.Ok;
-        public Button Close => _panel.Close;
-
         protected override void Reset() {
             RemoveElements();
             _points.Clear();
@@ -50,13 +40,6 @@ namespace Nordwest.Wpf.Controls.Tools {
         private void Ok_Click(object sender, RoutedEventArgs e) {
             PolygonToolAction?.Invoke(_latLng);
             Reset();
-        }
-
-        public UIElement Content {
-            get => _panel.Content;
-            set {
-                _panel.Content = value;
-            }
         }
 
         public List<PointLatLng> Coordinates => _latLng;
@@ -199,7 +182,7 @@ namespace Nordwest.Wpf.Controls.Tools {
             }
 
             if (_points.Count > 2) {
-                MapControl.UpperLayer.Children.Add(_panel);
+                MapControl.UpperLayer.Children.Add(Panel);
             }
 
         }
@@ -212,7 +195,7 @@ namespace Nordwest.Wpf.Controls.Tools {
                 MapControl.UpperLayer.Children.Remove(s);
             }
 
-            MapControl.UpperLayer.Children.Remove(_panel);
+            MapControl.UpperLayer.Children.Remove(Panel);
 
         }
 
@@ -258,8 +241,8 @@ namespace Nordwest.Wpf.Controls.Tools {
             if (_points.Count == 0)
                 return;
 
-            Canvas.SetLeft(_panel, Canvas.GetLeft(_points[_points.Count - 1]));
-            Canvas.SetTop(_panel, Canvas.GetTop(_points[_points.Count - 1]) - _panel.ActualHeight - 10);
+            Canvas.SetLeft(Panel, Canvas.GetLeft(_points[_points.Count - 1]));
+            Canvas.SetTop(Panel, Canvas.GetTop(_points[_points.Count - 1]) - Panel.ActualHeight - 10);
         }
 
         private void RefreshSegment(Line s, Ellipse p1, Ellipse p2) {

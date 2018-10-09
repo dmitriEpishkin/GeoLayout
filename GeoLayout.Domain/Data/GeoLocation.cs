@@ -6,6 +6,12 @@ namespace GeoLayout.Domain.Data {
         public static readonly GeoLocation Empty = new GeoLocation(double.NaN, double.NaN, double.NaN);
 
         public GeoLocation(double latitude, double longitude, double elevation) {
+
+            if (latitude < -90 || latitude > 90)
+                throw new ArgumentOutOfRangeException(nameof(latitude));
+            if (longitude >= 180 || longitude < -180)
+                throw new ArgumentOutOfRangeException(nameof(longitude));
+
             Latitude = latitude;
             Longitude = longitude;
             Elevation = elevation;
@@ -16,7 +22,7 @@ namespace GeoLayout.Domain.Data {
         /// </summary>
         /// <param name="p1"></param>
         /// <returns></returns>
-        public double DistanceTo(GeoLocation p1) {
+        public double DistanceInMetersTo(GeoLocation p1) {
             var p2 = this;
             var R = 6371; // радиус Земли в км
             var dLat = (p2.Latitude - p1.Latitude) * Math.PI / 180;

@@ -18,11 +18,11 @@ namespace GeoLayout.Domain {
                 var p1 = keyPoints[i - 1];
                 var p2 = keyPoints[i];
 
-                var xy1 = WgsUtmConverter.LatLonToUTMXY(p1.Location.Latitude, p1.Location.Longitude, 0);
-                var xy2 = WgsUtmConverter.LatLonToUTMXY(p2.Location.Latitude, p2.Location.Longitude, xy1.Item1);
+                var xy1 = WgsUtmConverter.LatLonToUTMXY(p1.Location, 0);
+                var xy2 = WgsUtmConverter.LatLonToUTMXY(p2.Location, xy1.Zone);
 
-                var dx = xy2.Item2 - xy1.Item2;
-                var dy = xy2.Item3 - xy1.Item3;
+                var dx = xy2.X - xy1.X;
+                var dy = xy2.Y - xy1.Y;
 
                 var a = Math.Atan(Math.Abs(dy / dx));
 
@@ -35,9 +35,9 @@ namespace GeoLayout.Domain {
                     var stepX = dx > 0 ? Math.Cos(a) * pos : -Math.Cos(a) * pos;
                     var stepY = dy > 0 ? Math.Sin(a) * pos : -Math.Sin(a) * pos;
 
-                    var latLon = WgsUtmConverter.UTMXYToLatLon(xy1.Item2 + stepX, xy1.Item3 + stepY, xy1.Item1, p1.Location.Latitude < 0);
+                    var latLon = WgsUtmConverter.UTMXYToLatLon(xy1.Shift(stepX, stepY), p1.Location.Latitude < 0);
 
-                    p.Add(new Waypoint(namingRule(counter), new GeoLocation(latLon.Item1, latLon.Item2, 0.0)));
+                    p.Add(new Waypoint(namingRule(counter), latLon));
 
                     counter++;
                     pos += stepInMeter;
@@ -67,16 +67,16 @@ namespace GeoLayout.Domain {
             var counter = 0;
             var pos = 0.0;
 
-            var xy = WgsUtmConverter.LatLonToUTMXY(start.Location.Latitude, start.Location.Longitude, 0);
+            var xy = WgsUtmConverter.LatLonToUTMXY(start.Location, 0);
 
             while (pos < length) {
 
                 var stepX = Math.Cos(angleRad) * pos;
                 var stepY = Math.Sin(angleRad) * pos;
 
-                var latLon = WgsUtmConverter.UTMXYToLatLon(xy.Item2 + stepX, xy.Item3 + stepY, xy.Item1, start.Location.Latitude < 0);
+                var latLon = WgsUtmConverter.UTMXYToLatLon(xy.Shift(stepX, stepY), start.Location.Latitude < 0);
 
-                p.Add(new Waypoint(namingRule(counter), new GeoLocation(latLon.Item1, latLon.Item2, 0.0)));
+                p.Add(new Waypoint(namingRule(counter), latLon));
 
                 counter++;
                 pos += stepInMeter;
@@ -91,7 +91,7 @@ namespace GeoLayout.Domain {
 
             var totalDist = 0.0;
             for (int i = 1; i < keyPoints.Count; i++) {
-                totalDist += keyPoints[i].Location.DistanceTo(keyPoints[i - 1].Location);
+                totalDist += keyPoints[i].Location.DistanceInMetersTo(keyPoints[i - 1].Location);
             }
 
             var step = totalDist / (count - 1);

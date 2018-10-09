@@ -86,6 +86,7 @@
     <Compile Include="InternalPanels\MapToolPanel.cs" />
     <Compile Include="RotationHelper.cs" />
     <Compile Include="Tools\AddPointLayer.cs" />
+    <Compile Include="Tools\BaseCommandToolLayer.cs" />
     <Compile Include="Tools\BaseToolLayer.cs" />
     <Compile Include="Tools\MapRulerLayer.cs" />
     <Compile Include="Layers\MapSegmentsLayer.cs" />

@@ -7,35 +7,25 @@ using System.Windows.Shapes;
 using GMap.NET;
 
 namespace Nordwest.Wpf.Controls.Tools {
-    public class AddPointLayer : BaseToolLayer {
+    public class AddPointLayer : BaseCommandToolLayer {
 
         private bool _isSet = false;
-
         private Point _pos1;
-
         private PointLatLng _point;
-
         private readonly Path _marker;
+        
+        private Action<PointLatLng> _layerAction;
 
-        private readonly MapToolPanel _addPanel;
-
-        private Action<PointLatLng> _addPointAction;
-
-        public AddPointLayer() {
+        public AddPointLayer() : base(new MapToolPanel()) {
 
             _marker = new Path { Fill = Brushes.Beige, Stroke = Brushes.DarkRed, StrokeThickness = 1, Margin = new Thickness(-5,-5,0,0), Data = Geometry.Parse("M 4,0 6,0 6,4 10,4 10,6 6,6 6,10 4,10 4,6 0,6 0,4 4,4 4,0") };
-
-            _addPanel = new MapToolPanel();
-
-            _addPanel.Ok.Click += AddPoint;
-            _addPanel.Close.Click += (sender, args) => {
+            
+            Panel.Ok.Click += AddPoint;
+            Panel.Close.Click += (sender, args) => {
                 Reset();
             };
             
         }
-
-        public Button Ok => _addPanel.Ok;
-        public Button Close => _addPanel.Close;
 
         protected override void Reset() {
             _isSet = false;
@@ -44,14 +34,9 @@ namespace Nordwest.Wpf.Controls.Tools {
             UpdatePanelPosition(Point);
             RefreshElements();
         }
-
-        public UIElement AddPointUI {
-            get => _addPanel.Content;
-            set => _addPanel.Content = value;
-        }
-
+        
         private void AddPoint(object sender, RoutedEventArgs args) {
-            _addPointAction?.Invoke(_point);
+            LayerAction?.Invoke(_point);
             Reset();
         }
 
@@ -77,7 +62,7 @@ namespace Nordwest.Wpf.Controls.Tools {
 
         private void RemoveElements() {
             _mapControl.UpperLayer.Children.Remove(_marker);
-            _mapControl.UpperLayer.Children.Remove(_addPanel);
+            _mapControl.UpperLayer.Children.Remove(Panel);
         }
 
         private void _gMap_SizeChanged(object sender, SizeChangedEventArgs e) {
@@ -129,8 +114,8 @@ namespace Nordwest.Wpf.Controls.Tools {
             Canvas.SetLeft(_marker, p.X);
             Canvas.SetTop(_marker, p.Y);
 
-            Canvas.SetLeft(_addPanel, p.X);
-            Canvas.SetTop(_addPanel, p.Y - _addPanel.ActualHeight - 10);
+            Canvas.SetLeft(Panel, p.X);
+            Canvas.SetTop(Panel, p.Y - Panel.ActualHeight - 10);
         }
 
         protected override void RefreshElements() {
@@ -148,17 +133,17 @@ namespace Nordwest.Wpf.Controls.Tools {
             
             if (_isSet) {
                 _mapControl.UpperLayer.Children.Add(_marker);
-                _mapControl.UpperLayer.Children.Add(_addPanel);
+                _mapControl.UpperLayer.Children.Add(Panel);
             }
 
         }
 
-        public Action<PointLatLng> AddPointAction {
-            get => _addPointAction;
+        public Action<PointLatLng> LayerAction {
+            get => _layerAction;
             set {
-                if (_addPointAction != value) {
-                    _addPointAction = value;
-                    OnPropertyChanged(nameof(AddPointAction));
+                if (_layerAction != value) {
+                    _layerAction = value;
+                    OnPropertyChanged(nameof(LayerAction));
                 }
             }
         }

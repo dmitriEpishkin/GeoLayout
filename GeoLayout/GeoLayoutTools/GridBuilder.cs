@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Waf.Foundation;
-using System.Windows;
 using GeoLayout.Domain;
 using GeoLayout.Domain.Data;
 using GeoLayout.Services;
@@ -23,12 +21,7 @@ namespace GeoLayout.GeoLayoutTools {
             WaypointsService = waypointsService;
             GroupsService = groupsService;
         }
-
-        public DataTemplate GetTemplate() {
-            ResourceDictionary templates = ResourceUtil.GetRelativeResourceDictionary(@"Templates\GeoLayoutToolsTemplate.xaml");
-            return (DataTemplate)templates["GridBuilderTemplate"];
-        }
-
+        
         public void Apply() {
 
             var group = new Group(GridName);
@@ -42,44 +35,36 @@ namespace GeoLayout.GeoLayoutTools {
 
             GroupsService.Groups.Add(group);
         }
-
-        public void BuildInsidePolygone(List<Waypoint> wpts) {
-            
-            var group = new Group(GridName);
-
-            var grid = GridFactory.CreateGridInsidePolygone(wpts, ProfileStep, SiteStep, ProfileAngleDeg, GridAngleDeg);
-
-            grid.ForEach(p => {
-                WaypointsService.Waypoints.Add(p);
-                group.Waypoints.Add(new WaypointGroupWrapper(group, p));
-            });
-
-            GroupsService.Groups.Add(group);
-        }
-
+        
         public void SetupWithGridFrame(GridFrame frame) {
             Corner = new Waypoint("", frame.Corner);
             GridWidth = frame.GetGridWidthMeters();
             ProfileLength = frame.GetProfileLengthMeters();
 
-            var c = WgsUtmConverter.LatLonToUTMXY(frame.Corner.Latitude, frame.Corner.Longitude, 0);
-            var a1 = WgsUtmConverter.LatLonToUTMXY(frame.P1.Latitude, frame.P1.Longitude, 0);
-            var a2 = WgsUtmConverter.LatLonToUTMXY(frame.P2.Latitude, frame.P2.Longitude, 0);
-            GridAngleDeg = CalculateAngle(c.Item2, c.Item3, a1.Item2, a1.Item3) * 180.0 / Math.PI;
-            ProfileAngleDeg = CalculateAngle(c.Item2, c.Item3, a2.Item2, a2.Item3) * 180.0 / Math.PI;
+            var c = WgsUtmConverter.LatLonToUTMXY(frame.Corner, 0);
+            var a1 = WgsUtmConverter.LatLonToUTMXY(frame.P1, 0);
+            var a2 = WgsUtmConverter.LatLonToUTMXY(frame.P2, 0);
+            GridAngleDeg = CalculateAngleDeg(c, a1);
+            ProfileAngleDeg = CalculateAngleDeg(c, a2);
         }
 
-        private double CalculateAngle(double x1, double y1, double x2, double y2) {
-            var dx = x2 - x1;
-            var dy = y2 - y1;
+        private double CalculateAngleDeg(GeoLocationXY p1, GeoLocationXY p2) {
+            var dx = p2.X - p1.X;
+            var dy = p2.Y - p1.Y;
             var arctg = Math.Atan(dx/ dy);
+
+            double angle;
+
             if (dx > 0 && dy > 0)
-                return arctg;
-            if (dx > 0 && dy < 0)
-                return Math.PI + arctg;
-            if (dx < 0 && dy > 0)
-                return arctg;
-            return Math.PI + arctg;
+                angle = arctg;
+            else if (dx > 0 && dy < 0)
+                angle = Math.PI + arctg;
+            else if (dx < 0 && dy > 0)
+                angle = arctg;
+            else 
+                angle = Math.PI + arctg;
+            
+            return angle * 180.0 / Math.PI;
         }
 
         public string Name => "Построить сетку";

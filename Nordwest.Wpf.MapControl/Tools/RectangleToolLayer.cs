@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 using GMap.NET;
 
 namespace Nordwest.Wpf.Controls.Tools {
-    public class RectangleToolLayer : BaseToolLayer {
+    public class RectangleToolLayer : BaseCommandToolLayer {
 
         private enum RectangleToolState {
             None,
@@ -42,16 +42,14 @@ namespace Nordwest.Wpf.Controls.Tools {
         private UIElement _selectedArrow;
         private bool _centerSelected;
         
-        private MapToolPanel _panel;
         private Action<PointLatLng, PointLatLng, PointLatLng> _rectToolAction;
 
         private Brush _lineBrush = Brushes.Red;
 
-        public RectangleToolLayer() {
+        public RectangleToolLayer() : base(new MapToolPanel()) {
 
-            _panel = new MapToolPanel();
-            _panel.Ok.Click += Ok_Click;
-            _panel.Close.Click += (sender, args) => { Reset(); };
+            Panel.Ok.Click += Ok_Click;
+            Panel.Close.Click += (sender, args) => { Reset(); };
 
             _c = new Path { Fill = Brushes.Beige, Stroke = Brushes.Blue, StrokeThickness = 1, Margin = new Thickness(-5, -5, 0, 0), Data = Geometry.Parse("M 4,0 6,0 6,4 10,4 10,6 6,6 6,10 4,10 4,6 0,6 0,4 4,4 4,0") };
 
@@ -71,17 +69,7 @@ namespace Nordwest.Wpf.Controls.Tools {
             RectToolAction?.Invoke(_center, _v1, _v2);
             Reset();
         }
-
-        public Button Ok => _panel.Ok;
-        public Button Close => _panel.Close;
-
-        public UIElement Content {
-            get => _panel.Content;
-            set {
-                _panel.Content = value;
-            }
-        }
-
+        
         public Action<PointLatLng, PointLatLng, PointLatLng> RectToolAction {
             get => _rectToolAction;
             set {
@@ -104,8 +92,8 @@ namespace Nordwest.Wpf.Controls.Tools {
 
             var p = p1.X > p2.X ? p1 : p2;
 
-            Canvas.SetLeft(_panel, p.X);
-            Canvas.SetTop(_panel, p.Y - _panel.ActualHeight - 10);
+            Canvas.SetLeft(Panel, p.X);
+            Canvas.SetTop(Panel, p.Y - Panel.ActualHeight - 10);
         }
 
         private Point GetAdditionalPoint() {
@@ -301,7 +289,7 @@ namespace Nordwest.Wpf.Controls.Tools {
                 _mapControl.UpperLayer.Children.Add(_a1);
                 _mapControl.UpperLayer.Children.Add(_a2);
 
-                _mapControl.UpperLayer.Children.Add(_panel);
+                _mapControl.UpperLayer.Children.Add(Panel);
             }
 
             if (_state != RectangleToolState.None)
@@ -331,7 +319,7 @@ namespace Nordwest.Wpf.Controls.Tools {
             _mapControl.UpperLayer.Children.Remove(_l3Add);
             _mapControl.UpperLayer.Children.Remove(_l4Add);
 
-            _mapControl.UpperLayer.Children.Remove(_panel);
+            _mapControl.UpperLayer.Children.Remove(Panel);
         }
 
     }

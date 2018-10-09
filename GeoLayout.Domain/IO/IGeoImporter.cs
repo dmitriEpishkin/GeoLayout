@@ -7,6 +7,7 @@ using GeoLayout.Domain.Data;
 
 namespace GeoLayout.Domain.IO {
     public interface IGeoImporter {
+        IFileTypeInfo GetFileTypeInfo();
         List<Waypoint> ImportWaypoints(string fileName);
     }
 }

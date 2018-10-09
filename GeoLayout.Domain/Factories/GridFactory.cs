@@ -1,10 +1,6 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GeoLayout.Domain.Data;
-using GeoLayout.Domain.Helpers;
 
 namespace GeoLayout.Domain {
     public static class GridFactory {
@@ -29,15 +25,5 @@ namespace GeoLayout.Domain {
             return res;
         }
 
-        public static List<Waypoint> CreateGridInsidePolygone(List<Waypoint> wpts, double profileStep, double siteStep, double profileAngleRad, double gridAngleRad) {
-
-            var gridFrame = wpts.GetFrame();
-
-            var corner = new Waypoint(gridFrame.Corner);
-
-            var grid = CreateGrid(corner, profileStep, siteStep, gridFrame.GetProfileLengthMeters(), gridFrame.GetGridWidthMeters(), profileAngleRad, gridAngleRad);
-
-            return grid.FindAll(wpt => wpt.IsInside(wpts));
-        }
     }
 }

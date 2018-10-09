@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Waf.Foundation;
-using System.Windows;
 using GeoLayout.Domain.Data;
 
 namespace GeoLayout.GeoLayoutTools {
@@ -12,11 +10,6 @@ namespace GeoLayout.GeoLayoutTools {
         private GeoLocation _location;
 
         public string Name => "Сдвиг";
-
-        public DataTemplate GetTemplate() {
-            ResourceDictionary templates = ResourceUtil.GetRelativeResourceDictionary(@"Templates\GeoLayoutToolsTemplate.xaml");
-            return (DataTemplate)templates["ShiftModifierTemplate"];
-        }
 
         public void Apply() {
             SelectedWaypoint.Location = Location;

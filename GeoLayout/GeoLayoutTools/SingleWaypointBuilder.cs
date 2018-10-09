@@ -1,6 +1,5 @@
 ﻿
 using System.Waf.Foundation;
-using System.Windows;
 using GeoLayout.Domain.Data;
 using GeoLayout.Services;
 
@@ -14,11 +13,6 @@ namespace GeoLayout.GeoLayoutTools {
         public SingleWaypointBuilder(WaypointsService waypointsService, GroupsService groupsService) {
             WaypointsService = waypointsService;
             GroupsService = groupsService;
-        }
-
-        public DataTemplate GetTemplate() {
-            ResourceDictionary templates = ResourceUtil.GetRelativeResourceDictionary(@"Templates\GeoLayoutToolsTemplate.xaml");
-            return (DataTemplate)templates["SingleWaypointBuilderTemplate"];
         }
 
         public void SetPosition(double lat, double lng) {
@@ -46,9 +40,7 @@ namespace GeoLayout.GeoLayoutTools {
             WaypointsService.Waypoints.Add(new Waypoint(PointName, new GeoLocation(Latitude, Longitude, 0.0)));
         }
         
-        public string Name {
-            get => "Добавить точку";
-        }
+        public string Name => "Добавить точку";
 
         public string PointName {
             get => _pointName;

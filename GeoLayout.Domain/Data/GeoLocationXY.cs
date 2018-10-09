@@ -1,30 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GeoLayout.Domain.Data {
     public class GeoLocationXY {
 
-        private int _zone;
-
-        private int _x;
-        private int _y;
-        private int _elevation;
-
-        public GeoLocationXY(int zone, int x, int y, int elevation) {
-            _zone = zone;
-            _x = x;
-            _y = y;
-            _elevation = elevation;
+        public GeoLocationXY(int zone, double x, double y, double elevation) {
+            Zone = zone;
+            X = x;
+            Y = y;
+            Elevation = elevation;
         }
 
-        public int Zone => _zone;
+        public GeoLocationXY Shift(double dx, double dy) {
+            return new GeoLocationXY(Zone, X + dx, Y + dy, Elevation);
+        }
 
-        public int X => _x;
-        public int Y => _y;
-        public int Elevation => _elevation;
+        public int DistanceInMetersTo(GeoLocationXY point) {
+            if (Zone != point.Zone)
+                throw new Exception();
 
+            var dx = X - point.X;
+            var dy = Y - point.Y;
+            var dz = Elevation - point.Elevation;
+
+            return (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        }
+
+        public XyInt ToXyInt() {
+            return new XyInt((int)X, (int)Y);
+        }
+
+        public int Zone { get; }
+        public double X { get; }
+        public double Y { get; }
+        public double Elevation { get; }
     }
 }

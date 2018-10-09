@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GeoLayout.Domain.Data;
 
 namespace GeoLayout.Domain {
     public static class WgsUtmConverter {
@@ -10,9 +7,9 @@ namespace GeoLayout.Domain {
 
         /* Ellipsoid model constants (actual values here are for WGS84) */
         const double sm_a = 6378137.0;
-    const double sm_b = 6356752.314;
-    const double sm_EccSquared = 6.69437999013e-03;
-    const double UTMScaleFactor = 0.9996;
+        const double sm_b = 6356752.314;
+        const double sm_EccSquared = 6.69437999013e-03;
+        const double UTMScaleFactor = 0.9996;
 
     /*
     * LatLonToUTMXY
@@ -32,19 +29,14 @@ namespace GeoLayout.Domain {
     *
     */
 
-    public static Tuple<int, double, double> LatLonToUTMXY(double lat, double lon, int zone) {
-
-        if (lat < -90 || lat > 90)
-            throw new ArgumentOutOfRangeException(nameof(lat));
-        if (lon >= 180 || lon < -180)
-            throw new ArgumentOutOfRangeException(nameof(lon));
+    public static GeoLocationXY LatLonToUTMXY(GeoLocation latLng, int zone) {
 
         // Compute the UTM zone.
         if (zone < 1 || zone > 60)
-            zone = (int)Math.Floor((lon + 180.0) / 6) + 1;
+            zone = (int)Math.Floor((latLng.Longitude + 180.0) / 6) + 1;
 
-        lat = DegToRad(lat);
-        lon = DegToRad(lon);
+        var lat = DegToRad(latLng.Latitude);
+        var lon = DegToRad(latLng.Longitude);
 
         var xy = MapLatLonToXy(lat, lon, UTMCentralMeridian(zone));
 
@@ -54,7 +46,7 @@ namespace GeoLayout.Domain {
         if (xy.Item2 < 0.0)
             yNew = yNew + 10000000.0;
 
-        return new Tuple<int, double, double>(zone, xNew, yNew);
+        return new GeoLocationXY(zone, xNew, yNew, latLng.Elevation);
     }
 
     /*
@@ -75,24 +67,26 @@ namespace GeoLayout.Domain {
     *            longitude of the point, in degrees.
     */
 
-    public static Tuple<double, double> UTMXYToLatLon(double x, double y, int zone, bool southhemi) {
+    public static GeoLocation UTMXYToLatLon(GeoLocationXY xy, bool southhemi) {
 
-        if (zone < 1 || zone > 60)
-            throw new ArgumentOutOfRangeException(nameof(zone));
+        if (xy.Zone < 1 || xy.Zone > 60)
+            throw new ArgumentOutOfRangeException(nameof(xy.Zone));
 
-        x -= 500000.0;
+        var x = xy.X - 500000.0;
         x /= UTMScaleFactor;
+
+        var y = xy.Y;
 
         /* If in southern hemisphere, adjust y accordingly. */
         if (southhemi)
-            y -= 10000000.0;
+            y -= 10000000;
 
         y /= UTMScaleFactor;
 
-        var cmeridian = UTMCentralMeridian(zone);
+        var cmeridian = UTMCentralMeridian(xy.Zone);
         var rad = MapXyToLatLon(x, y, cmeridian);
 
-        return new Tuple<double, double>(RadToDeg(rad.Item1), RadToDeg(rad.Item2));
+        return new GeoLocation(RadToDeg(rad.Item1), RadToDeg(rad.Item2), xy.Elevation);
     }
 
     private static double DegToRad(double deg) {

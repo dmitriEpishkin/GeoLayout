@@ -1,5 +1,7 @@
 ﻿
+using System.Collections.Generic;
 using System.Windows;
+using GeoLayout.Domain.IO;
 using GeoLayout.Services;
 using GeoLayout.ViewModels;
 
@@ -10,14 +12,28 @@ namespace GeoLayout {
     public partial class App : Application {
 
         public App() {
-
+            
             var waypointsService = new WaypointsService();
             var groupsService = new GroupsService(waypointsService);
 
             GeoLayoutBuildingService = new GeoLayoutBuildingService(waypointsService, groupsService);
             SettingsService = new SettingsService();
             
-            MainViewModel = new MainViewModel(waypointsService, groupsService, GeoLayoutBuildingService);
+            var importService = new ImportService(
+                new List<IGeoImporter>(new [] {
+                    new GpxImporter() 
+                }), 
+                new MultiFileDialogService(Current.MainWindow), 
+                waypointsService);
+
+            var exportService = new ExportService(
+                new List<IGeoExporter>(new [] {
+                    new GpxExporter() 
+                }), 
+                new SaveFileDialogService(Current.MainWindow), 
+                waypointsService);
+
+            MainViewModel = new MainViewModel(importService, exportService, waypointsService, groupsService, GeoLayoutBuildingService);
             MapViewModel = new MapViewModel(waypointsService, GeoLayoutBuildingService);
             GroupsViewModel = new GroupsViewModel(groupsService, waypointsService);
         }
