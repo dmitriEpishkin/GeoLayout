@@ -1,8 +1,10 @@
 ﻿
+using System.Collections.ObjectModel;
 using System.Waf.Foundation;
+using Nordwest.Collections;
 
 namespace GeoLayout.Domain.Data {
-    public class Waypoint : Model {
+    public class Waypoint : Model, IGroupingNode {
 
         private string _name;
         private GeoLocation _location;
@@ -58,6 +60,8 @@ namespace GeoLayout.Domain.Data {
                 }
             }
         }
+
+        public ObservableRangeCollection<IGroupingNode> Children { get; } = null;
 
     }
 }

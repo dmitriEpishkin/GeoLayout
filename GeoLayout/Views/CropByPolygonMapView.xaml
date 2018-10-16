@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock Text="Оставить точки в пределах полигона" TextWrapping="WrapWithOverflow" Margin="3"/>
+        <TextBlock Width="90" Text="Оставить точки в пределах полигона" TextAlignment="Center" TextWrapping="WrapWithOverflow" Margin="3"/>
     </Grid>
 </UserControl>

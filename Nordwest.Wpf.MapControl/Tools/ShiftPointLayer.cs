@@ -83,7 +83,7 @@ namespace Nordwest.Wpf.Controls.Tools {
 
         private void _mapControl_MouseDown(object sender, MouseButtonEventArgs e) {
 
-            var marker = _gMap.Markers.FirstOrDefault(m => ((MapMarkerContainer)m.Shape).IsMouseOver);
+            var marker = _gMap.Markers.FirstOrDefault(m => m.Shape is MapMarkerContainer && ((MapMarkerContainer)m.Shape).IsMouseOver);
             var pos = e.GetPosition(_mapControl.UpperLayer);
 
             if (marker is MapMarker ma) {

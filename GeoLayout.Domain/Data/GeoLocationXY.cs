@@ -10,6 +10,10 @@ namespace GeoLayout.Domain.Data {
             Elevation = elevation;
         }
 
+        public GeoLocationXY Shift(GeoOffset offset) {
+            return Shift(offset.OffsetXMeters, offset.OffsetYMeters);
+        }
+
         public GeoLocationXY Shift(double dx, double dy) {
             return new GeoLocationXY(Zone, X + dx, Y + dy, Elevation);
         }
@@ -24,11 +28,7 @@ namespace GeoLayout.Domain.Data {
 
             return (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
         }
-
-        public XyInt ToXyInt() {
-            return new XyInt((int)X, (int)Y);
-        }
-
+        
         public int Zone { get; }
         public double X { get; }
         public double Y { get; }

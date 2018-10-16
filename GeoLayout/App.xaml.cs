@@ -34,7 +34,7 @@ namespace GeoLayout {
                 waypointsService);
 
             MainViewModel = new MainViewModel(importService, exportService, waypointsService, groupsService, GeoLayoutBuildingService);
-            MapViewModel = new MapViewModel(waypointsService, GeoLayoutBuildingService);
+            MapViewModel = new MapViewModel(waypointsService, groupsService, GeoLayoutBuildingService);
             GroupsViewModel = new GroupsViewModel(groupsService, waypointsService);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Waf.Foundation;
 using GeoLayout.Domain;
 using GeoLayout.Domain.Data;
@@ -28,11 +29,20 @@ namespace GeoLayout.GeoLayoutTools {
 
             var wpts = GridFactory.CreateGrid(Corner, ProfileStep, SiteStep, ProfileLength, GridWidth, ProfileAngleDeg / 180.0 * Math.PI, GridAngleDeg / 180.0 * Math.PI);
 
-            wpts.ForEach(p => {
-                WaypointsService.Waypoints.Add(p);
-                group.Waypoints.Add(new WaypointGroupWrapper(group, p));
-            });
+            WaypointsService.Waypoints.AddRange(wpts.SelectMany(w => w));
 
+            for (int i = 0; i < wpts.Count; i++) {
+                var profileGroup = new ProfileGroup($"{group.Name} Профиль #:{i}");
+                group.Children.Add(profileGroup);
+                profileGroup.Children.AddRange(wpts[i]);
+            }
+
+            for (int i = 0; i < wpts[0].Count; i++) {
+                var orthGroup = new ProfileGroup($"{group.Name} Пикет #:{i}");
+                orthGroup.Children.AddRange(wpts.ConvertAll(wpt => wpt[i]));
+                group.Children.Add(orthGroup);
+            }
+            
             GroupsService.Groups.Add(group);
         }
         

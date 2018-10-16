@@ -14,6 +14,8 @@ namespace GeoLayout.Services {
             ShiftModifier = new ShiftModifier();
             RotateModifier = new RotateModifier();
             CropModifier = new CropModifier(waypointsService);
+
+            TdmLayoutBuilder = new TdmLayoutBuilder(waypointsService, groupsService);
         }
         
         public SingleWaypointBuilder WaypointBuilder { get; }
@@ -24,5 +26,7 @@ namespace GeoLayout.Services {
         public RotateModifier RotateModifier { get; }
         public CropModifier CropModifier { get; }
         
+        public TdmLayoutBuilder TdmLayoutBuilder { get; }
+
     }
 }

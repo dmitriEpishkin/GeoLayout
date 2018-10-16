@@ -5,11 +5,11 @@ using GeoLayout.Domain.Data;
 namespace GeoLayout.Domain {
     public static class GridFactory {
         
-        public static List<Waypoint> CreateGrid(Waypoint corner, double profileStep, double siteStep, double profileLength, double gridWidth, double profileAngleRad, double gridAngleRad) {
+        public static List<List<Waypoint>> CreateGrid(Waypoint corner, double profileStep, double siteStep, double profileLength, double gridWidth, double profileAngleRad, double gridAngleRad) {
 
             var starts = ProfileFactory.CreateWithFixedStep(corner, gridWidth, profileStep, gridAngleRad);
 
-            var res = new List<Waypoint>();
+            var res = new List<List<Waypoint>>();
 
             for (int k = 0; k < starts.Count; k++) {
 
@@ -19,7 +19,7 @@ namespace GeoLayout.Domain {
                     profile[i].Name = k + "-" + i;
                 }
 
-                res.AddRange(profile);
+                res.Add(profile);
             }
 
             return res;

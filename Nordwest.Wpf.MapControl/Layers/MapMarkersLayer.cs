@@ -25,7 +25,11 @@ namespace Nordwest.Wpf.Controls {
         private MarkerClusterer _clusterer;
         
         private int _lastInd = 0;
-        
+
+        public MapMarkersLayer() {
+            WakeUp();
+        }
+
         private bool _isSleeping = true;
         public void Sleep() {
             if (!_isSleeping) {
@@ -121,17 +125,27 @@ namespace Nordwest.Wpf.Controls {
             LastElementIndex -= count;
         }
 
-        private void RemoveMarker(object sourceItem) {
-            var marker = _gMap.Markers.First(m => {
-                var element = m.Shape as FrameworkElement;
-                return element != null && element.DataContext == sourceItem;
-            });
-            _gMap.Markers.Remove(marker);
+        private void RemoveMarkers(IEnumerable sourceItems) {
 
+            var source = sourceItems.Cast<object>().ToList();
+            if (!source.Any())
+                return;
+
+            var oldMarkers = new List<MapMarker>();
+
+            foreach (var item in source) {
+                var marker = _gMap.Markers.First(m => {
+                    var element = m.Shape as FrameworkElement;
+                    return element != null && element.DataContext == item;
+                });
+                _gMap.Markers.Remove(marker);
+                oldMarkers.Add((MapMarker)marker);
+            }
+            
             try {
                 Dispatcher.Invoke(new Action(() => {
 
-                    _clusterer.RemoveMarkers(new List<MapMarker> { (MapMarker)marker });
+                    _clusterer.RemoveMarkers(oldMarkers);
                     _mapControl.UpdateZoomLayout();
 
                 }), DispatcherPriority.DataBind);
@@ -169,8 +183,7 @@ namespace Nordwest.Wpf.Controls {
                         AddMarkers(e.NewItems, false);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (var item in e.OldItems)
-                        RemoveMarker(item);
+                        RemoveMarkers(e.OldItems);
                     LastElementIndex -= e.OldItems.Count;
                     break;
                 case NotifyCollectionChangedAction.Replace:

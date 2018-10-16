@@ -19,8 +19,8 @@ namespace GeoLayout.ViewModels {
 
         private void Remove(object obj) {
 
-            if (obj is WaypointGroupWrapper wrapper) {
-                WaypointsService.RemoveCommand.Execute(wrapper.Waypoint);
+            if (obj is Waypoint waypoint) {
+                WaypointsService.RemoveCommand.Execute(waypoint);
                 return;
             }
 
@@ -32,11 +32,11 @@ namespace GeoLayout.ViewModels {
 
         private void ClearGroup(Group group) {
 
-            foreach (var g in group.Children)
+            foreach (var g in group.Children.OfType<Group>().ToList())
                 ClearGroup(g);
 
-            foreach (var p in group.Waypoints.ToArray())
-                WaypointsService.RemoveCommand.Execute(p.Waypoint);
+            foreach (var p in group.Children.OfType<Waypoint>().ToList())
+                WaypointsService.RemoveCommand.Execute(p);
         }
 
         public WaypointsService WaypointsService { get; }

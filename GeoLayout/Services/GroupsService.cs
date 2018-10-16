@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Waf.Foundation;
 using GeoLayout.Domain.Data;
+using Nordwest.Collections;
 
 namespace GeoLayout.Services {
     public class GroupsService : Model {
@@ -23,7 +24,7 @@ namespace GeoLayout.Services {
             _defaultGroup = new Group("Не сгруппированные");
 
             _waypointsService.Waypoints.CollectionChanged += Waypoints_CollectionChanged;
-            _defaultGroup.Waypoints.CollectionChanged += DefaultWaypoints_CollectionChanged;
+            _defaultGroup.Children.CollectionChanged += DefaultWaypoints_CollectionChanged;
             Groups.CollectionChanged += Groups_CollectionChanged;
         }
 
@@ -51,6 +52,7 @@ namespace GeoLayout.Services {
                 default:
                     throw new ArgumentOutOfRangeException();
             }    
+            UpdateShapesCollection();
         }
 
         private void Subscribe(Group group) {
@@ -58,43 +60,44 @@ namespace GeoLayout.Services {
             if (group == _defaultGroup)
                 return;
             
-            foreach (var defaultGroupWaypoint in _defaultGroup.Waypoints.ToList()) {
-                CheckWaypoint(defaultGroupWaypoint.Waypoint);
+            foreach (var defaultGroupWaypoint in _defaultGroup.Children.OfType<Waypoint>().ToList()) {
+                CheckWaypoint(defaultGroupWaypoint);
             }
 
-            group.Waypoints.CollectionChanged += WaypointsLocal_CollectionChanged;
+            group.Children.CollectionChanged += GroupChildren_CollectionChanged;
             _subscribed.Add(group);
 
-            foreach (var g in group.Children)
+            foreach (var g in group.Children.OfType<Group>())
                 Subscribe(g);
         }
 
-        private void WaypointsLocal_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void GroupChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             if (e.NewItems != null)
-                foreach (var p in e.NewItems.OfType<WaypointGroupWrapper>())
-                    CheckWaypoint(p.Waypoint);
+                foreach (var p in e.NewItems.OfType<Waypoint>())
+                    CheckWaypoint(p);
             if (e.OldItems != null)
-                foreach (var p in e.OldItems.OfType<WaypointGroupWrapper>())
-                    CheckWaypoint(p.Waypoint);
+                foreach (var p in e.OldItems.OfType<Waypoint>())
+                    CheckWaypoint(p);
+            UpdateShapesCollection();
         }
 
         private void Unsubscribe(Group group) {
             if (group == _defaultGroup)
                 return;
 
-            group.Waypoints.CollectionChanged -= WaypointsLocal_CollectionChanged;
+            group.Children.CollectionChanged -= GroupChildren_CollectionChanged;
             _subscribed.Remove(group);
 
-            foreach (var g in group.Children)
+            foreach (var g in group.Children.OfType<Group>())
                 Unsubscribe(g);
         }
 
         private void DefaultWaypoints_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-#warning надо исправить!!!
+            #warning надо исправить!!!
             try {
-                if (_defaultGroup.Waypoints.Count == 0)
+                if (_defaultGroup.Children.Count == 0)
                     Groups.Remove(_defaultGroup);
-                else if (_defaultGroup.Waypoints.Count > 0 && !Groups.Contains(_defaultGroup))
+                else if (_defaultGroup.Children.Count > 0 && !Groups.Contains(_defaultGroup))
                     Groups.Insert(0, _defaultGroup);
             }
             catch { }
@@ -124,38 +127,75 @@ namespace GeoLayout.Services {
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            RemoveEmptyGroups();
         }
 
         private void CheckWaypoint(Waypoint wpt) {
 
-            if (Groups
-                .Where(g => g != _defaultGroup)
-                .Any(g => g.CheckWaypoint(wpt))) {
-
-                var p = _defaultGroup.Waypoints.FirstOrDefault(w => w.Waypoint == wpt);
-                if (p != null)
-                    _defaultGroup.Waypoints.Remove(p);
+            if (Groups.OfType<Group>().Where(g => g != _defaultGroup).Any(g => g.HasWaypoint(wpt))) {
+                    _defaultGroup.Children.Remove(wpt);
             }
 
-            else if (_defaultGroup.Waypoints.All(p => p.Waypoint != wpt))
-                _defaultGroup.Waypoints.Add(new WaypointGroupWrapper(_defaultGroup, wpt));
+            else if (!_defaultGroup.Children.Contains(wpt))
+                _defaultGroup.Children.Add(wpt);
+
         }
 
-        private void RemoveWaypoint(Waypoint p, IEnumerable<Group> groups) {
-            foreach (var g in groups.ToArray()) {
-                var pp = g.Waypoints.FirstOrDefault(w => w.Waypoint == p);
-                if (pp != null)
-                    g.Waypoints.Remove(pp);
+        private void RemoveWaypoint(Waypoint p, IEnumerable<IGroupingNode> groups) {
+            
+            _defaultGroup.Children.Remove(p);
 
+            if (groups == null)
+                return;
+
+            foreach (var g in groups.ToArray()) {
+                g.Children?.Remove(p);
                 RemoveWaypoint(p, g.Children);
             }
+        }
 
-            var ppp = _defaultGroup.Waypoints.FirstOrDefault(w => w.Waypoint == p);
-            _defaultGroup.Waypoints.Remove(ppp);
+        private void RemoveEmptyGroups() {
+            var toRemove = Groups.OfType<Group>().Where(child => child.Children.Count == 0).ToList();
+            Groups.RemoveRange(toRemove);
+            foreach (var group in Groups.OfType<Group>()) {
+                RemoveEmptyGroups(group);
+            }
+        }
+
+        private void RemoveEmptyGroups(Group group) {
+            var toRemove = group.Children.OfType<Group>().Where(child => child.Children.Count == 0).ToList();
+            if (toRemove.Count > 0) {
+                group.Children.RemoveRange(toRemove);
+            }
+
+            foreach (var childGroup in group.Children.OfType<Group>()) {
+                RemoveEmptyGroups(childGroup);
+            }
 
         }
 
-        public ObservableCollection<Group> Groups { get; } = new ObservableCollection<Group>();
+        private void UpdateShapesCollection() {
+            Shapes.Clear();
+            FindAllShapes(Groups);
+        }
+
+        private void FindAllShapes(IEnumerable<IGroupingNode> groups) {
+
+            if (groups == null)
+                return;
+
+            foreach (var group in groups) {
+                if (group is IShapeProvider shape)
+                    Shapes.Add(shape);
+
+                FindAllShapes(group.Children);
+            }
+
+        }
+
+        public ObservableRangeCollection<IGroupingNode> Groups { get; } = new ObservableRangeCollection<IGroupingNode>();
+
+        public ObservableCollection<IShapeProvider> Shapes { get; } = new ObservableCollection<IShapeProvider>();
 
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Waf.Applications;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using GeoLayout.Domain.Data;
 using GeoLayout.ViewModels;
@@ -38,10 +39,11 @@ namespace GeoLayout.Views
 
             ShowAllCommand = new DelegateCommand(ShowAll, CanShowAll);
 
-            Map.MapProvider = GMapProviders.BingSatelliteMap;
+            Map.MapProvider = GMapProviders.GoogleTerrainMap;
             
             Map.Layers = new ObservableCollection<IGMapElementsLayer>();
             Map.Layers.Clear();
+            Map.Layers.Add(ShapesLayer);
             Map.Layers.Add(PointsLayer);
 
             ResourceDictionary res = ResourceUtil.GetRelativeResourceDictionary(@"Themes\GeoLayoutTheme.xaml");
@@ -148,7 +150,28 @@ namespace GeoLayout.Views
 
             PointsLayer.SelectedItems.CollectionChanged += SelectedItems_CollectionChanged;
             _model.WaypointsService.SelectedWaypoints.CollectionChanged += SelectedWaypoints_CollectionChanged;
+            _model.GroupsService.Shapes.CollectionChanged += Shapes_CollectionChanged;
 
+        }
+
+        private void Shapes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            UpdateShapesLayer();
+        }
+
+        private void UpdateShapesLayer() {
+            var brush = Brushes.Blue;
+            ShapesLayer.Clear();
+            foreach (var shape in _model.GroupsService.Shapes) {
+
+                if (shape.Shape.Count < 2)
+                    continue;
+
+                var points = new List<PointLatLng>();
+                foreach (var point in shape.Shape)
+                    points.Add(new PointLatLng(point.Latitude, point.Longitude));
+
+                ShapesLayer.Add(shape, points, brush);
+            }
         }
 
         private void InitalizeLayerButtons(BaseCommandToolLayer layer) {

@@ -20,8 +20,12 @@ namespace Nordwest.Wpf.Controls {
         private int _count;
 
         public void Add(object obj, double lat1, double lon1, double lat2, double lon2, Brush brush) {
-            
-            var r = new GMapRoute(new[] { new PointLatLng(lat1, lon1), new PointLatLng(lat2, lon2) });
+            var points = new[] { new PointLatLng(lat1, lon1), new PointLatLng(lat2, lon2) };
+            Add(obj, points, brush);
+        }
+
+        public void Add(object obj, IEnumerable<PointLatLng> points, Brush brush) {
+            var r = new GMapRoute(points);
             var s = new MapSegment(r, brush);
             _routes.Add(obj, s);
 
@@ -31,10 +35,9 @@ namespace Nordwest.Wpf.Controls {
             ShowMapSegment(s);
 
             CreateShape(r, brush);
-            
-            if (!LayerIsVisible) 
-                HideMapElement(s);            
 
+            if (!LayerIsVisible)
+                HideMapElement(s);
         }
 
         private void CreateShape(GMapRoute r, Brush brush) {
@@ -72,8 +75,8 @@ namespace Nordwest.Wpf.Controls {
         private void HideMapElement(MapSegment r) {
             if (_gMap.Markers.Remove(r.Route)) {
                 r.IsVisible = false;
-                LastElementIndex--;
                 _count--;
+                LastElementIndex--;
             }
         }
 
@@ -90,8 +93,8 @@ namespace Nordwest.Wpf.Controls {
         private void ShowMapSegment(MapSegment r) {
             _gMap.Markers.Insert(LastElementIndex, r.Route);
             r.IsVisible = true;
-            LastElementIndex++;
             _count++;
+            LastElementIndex++;
         }
 
         public static readonly DependencyProperty LayerIsVisibleProperty = DependencyProperty.Register(

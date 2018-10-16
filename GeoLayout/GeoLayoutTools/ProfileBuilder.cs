@@ -55,19 +55,19 @@ namespace GeoLayout.GeoLayoutTools {
 
             wps.ForEach(p => {
                 WaypointsService.Waypoints.Add(p);
-                group.Waypoints.Add(new WaypointGroupWrapper(group, p));
+                group.Children.Add(p);
             });
 
             GroupsService.Groups.Add(group);
         }
 
         public void Build(List<Waypoint> points) {
-            var group = new Group(ProfileName);
+            var group = new ProfileGroup(ProfileName);
             var wps = ProfileFactory.CreateWithFixedStep(points, StepMeters, SelectedNamingScheme.GetWaypointName);
 
             wps.ForEach(p => {
                 WaypointsService.Waypoints.Add(p);
-                group.Waypoints.Add(new WaypointGroupWrapper(group, p));
+                group.Children.Add(p);
             });
 
             GroupsService.Groups.Add(group);

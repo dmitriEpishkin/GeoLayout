@@ -59,13 +59,14 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-
+ 
             <geoLayout:DoubleToPointLatLngConverter x:Key="DoubleToLatLongConverter"/>
             <DataTemplate x:Key="PointItemTemplate" DataType="{x:Type data:Waypoint}">
                 <Grid Margin="-5,-5">
-                    <Polygon Stroke="Black" StrokeThickness="0.5" Fill="White" SnapsToDevicePixels="True" 
+                    <Ellipse Stroke="Black" Fill="White" SnapsToDevicePixels="True" Width="12" Height="12"/>
+                    <!--<Polygon Stroke="Black" StrokeThickness="0.5" Fill="White" SnapsToDevicePixels="True" 
                              Points="4,0 6,0 6,4  10,4 10,6 6,6 6,10 4,10 4,6 0,6 0,4 4,4">
-                    </Polygon>
+                    </Polygon>-->
                     <controls:MapControl.PointLatLong>
                         <MultiBinding Converter="{StaticResource DoubleToLatLongConverter}">
                             <Binding Path="Location.Latitude" />
@@ -122,6 +123,8 @@
             </controls:MapMarkersLayer.MarkerContainerStyle>
         </controls:MapMarkersLayer>
 
+        <controls:MapSegmentsLayer x:Name="ShapesLayer"/>
+
         <controls:MapControl x:Name="Map">
             <controls:MapControl.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, local:MapView, 1}, Path=ShowAllCommand}" />
@@ -152,7 +155,7 @@
                 <Image Source="../Images/parallelogram.png" Width="28" Height="28"/>
             </ToggleButton>
             <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=PolygonToolLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Обрезать по многоугольнику">
-                <Image Source="../Images/polygon.png" Width="28" Height="28"/>
+                <Image Source="../Images/crop.png" Width="28" Height="28"/>
             </ToggleButton>
         </StackPanel>
 

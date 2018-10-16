@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GeoLayout.Views"
-             xmlns:data="clr-namespace:GeoLayout.Domain.Data;assembly=GeoLayout.Domain"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -13,7 +12,7 @@
     <Grid>
         <TreeView ItemsSource="{Binding GroupsService.Groups}">
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Waypoints}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
 
                     <StackPanel Orientation="Horizontal">
                         <CheckBox IsChecked="{Binding IsVisible}"/>
@@ -23,19 +22,6 @@
                             <Image Source="../Images/icons8-trash-can-24.png" Width="16"/>
                         </Button>
                     </StackPanel>
-
-                    <HierarchicalDataTemplate.ItemTemplate>
-                        <DataTemplate DataType="data:WaypointGroupWrapper">
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox IsChecked="{Binding Waypoint.IsVisible}"/>
-                                <CheckBox IsChecked="{Binding Waypoint.IsSelected}"/>
-                                <TextBlock Text="{Binding Waypoint.Name}"/>
-                                <Button Style="{StaticResource PictogramButton}" Command="{Binding RelativeSource={RelativeSource AncestorType=local:GroupsView, Mode=FindAncestor}, Path=DataContext.RemoveCommand}" CommandParameter="{Binding}">
-                                    <Image Source="../Images/icons8-trash-can-24.png" Width="16"/>
-                                </Button>
-                            </StackPanel>
-                        </DataTemplate>
-                    </HierarchicalDataTemplate.ItemTemplate>
 
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
