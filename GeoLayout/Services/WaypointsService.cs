@@ -16,9 +16,6 @@ namespace GeoLayout {
 
         private readonly List<Waypoint> _points = new List<Waypoint>();
 
-        private readonly List<Waypoint> _removeVisible = new List<Waypoint>();
-        private readonly List<Waypoint> _addVisible = new List<Waypoint>();
-        
         public WaypointsService() {
             
             RemoveCommand = new DelegateCommand(obj => Waypoints.Remove((Waypoint)obj));

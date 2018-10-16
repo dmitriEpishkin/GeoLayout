@@ -15,9 +15,13 @@
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
 
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsVisible}"/>
-                        <CheckBox IsChecked="{Binding IsSelected}"/>
-                        <TextBlock Text="{Binding Name}"/>
+                        <ToggleButton IsChecked="{Binding IsVisible}" Width="20" Height="20" Margin="3" Background="White" BorderThickness="0">
+                            <Image Source="../Images/icons8-eye-32.png"/>
+                        </ToggleButton>
+                        <ToggleButton IsChecked="{Binding IsSelected}" Width="20" Height="20" Margin="3" Background="White" BorderThickness="0">
+                            <Image Source="../Images/Check.png"/>
+                        </ToggleButton>
+                        <TextBlock Text="{Binding Name}" Margin="3" VerticalAlignment="Center"/>
                         <Button Style="{StaticResource PictogramButton}" Command="{Binding RelativeSource={RelativeSource AncestorType=local:GroupsView, Mode=FindAncestor}, Path=DataContext.RemoveCommand}" CommandParameter="{Binding}">
                             <Image Source="../Images/icons8-trash-can-24.png" Width="16"/>
                         </Button>
