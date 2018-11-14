@@ -27,7 +27,7 @@ namespace GeoLayout.Views {
         public ShiftPointMapView() {
             InitializeComponent();
 
-            _tool = ((App) Application.Current).LayoutBuilderService.ShiftModifier; 
+            _tool = ((App) Application.Current).GeoLayoutBuildingService.ShiftModifier; 
             _model = (GeoLocationViewModel)CoordinatesView.DataContext;
 
             _tool.PropertyChanged += _tool_PropertyChanged;

@@ -7,7 +7,6 @@
              xmlns:controls="clr-namespace:Nordwest.Wpf.Controls;assembly=Nordwest.Wpf.MapControl"
              xmlns:geoLayout="clr-namespace:GeoLayout"
              xmlns:data="clr-namespace:GeoLayout.Domain.Data;assembly=GeoLayout.Domain"
-             xmlns:layers="clr-namespace:Nordwest.Wpf.Controls.Layers;assembly=Nordwest.Wpf.MapControl"
              xmlns:tools="clr-namespace:Nordwest.Wpf.Controls.Tools;assembly=Nordwest.Wpf.MapControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -123,19 +122,18 @@
             </controls:MapMarkersLayer.MarkerContainerStyle>
         </controls:MapMarkersLayer>
 
-        <layers:MapRulerLayer x:Name="MapRuler"/>
+        <controls:MapControl x:Name="Map">
+            <controls:MapControl.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, local:MapView, 1}, Path=ShowAllCommand}" />
+            </controls:MapControl.InputBindings>
+        </controls:MapControl>
+
         <tools:AddPointLayer x:Name="AddPointLayer"/>
         <tools:ShiftPointLayer x:Name="ShiftPointLayer"/>
         <tools:RouteToolLayer x:Name="MultiRulerToolLayer"/>
         <tools:RouteToolLayer x:Name="RouteToolLayer"/>
         <tools:RectangleToolLayer x:Name="RectangleToolLayer"/>
         <tools:PolygonToolLayer x:Name="PolygonToolLayer"/>
-
-        <controls:MapControl x:Name="Map">
-            <controls:MapControl.InputBindings>
-                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, local:MapView, 1}, Path=ShowAllCommand}" />
-            </controls:MapControl.InputBindings>
-        </controls:MapControl>
 
         <StackPanel Orientation="Horizontal">
             <ToggleButton Margin="6,5" IsChecked="{Binding ElementName=AddPointLayer, Path=IsActive}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource MapToggleButton}" Width="39" Height="39" ToolTip="Добавить точку">

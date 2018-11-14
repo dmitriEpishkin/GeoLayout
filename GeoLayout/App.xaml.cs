@@ -14,20 +14,18 @@ namespace GeoLayout {
             var waypointsService = new WaypointsService();
             var groupsService = new GroupsService(waypointsService);
 
-            LayoutBuilderService = new GeoLayoutService(waypointsService, groupsService);
+            GeoLayoutBuildingService = new GeoLayoutBuildingService(waypointsService, groupsService);
             SettingsService = new SettingsService();
             
-            MainViewModel = new MainViewModel(waypointsService, groupsService, LayoutBuilderService);
-            MapViewModel = new MapViewModel(waypointsService, LayoutBuilderService);
-            BuilderViewModel = new BuilderViewModel(waypointsService, groupsService, LayoutBuilderService);
+            MainViewModel = new MainViewModel(waypointsService, groupsService, GeoLayoutBuildingService);
+            MapViewModel = new MapViewModel(waypointsService, GeoLayoutBuildingService);
             GroupsViewModel = new GroupsViewModel(groupsService, waypointsService);
         }
 
-        public GeoLayoutService LayoutBuilderService { get; }
+        public GeoLayoutBuildingService GeoLayoutBuildingService { get; }
         public SettingsService SettingsService { get; }
 
         public MainViewModel MainViewModel { get; }
-        public BuilderViewModel BuilderViewModel { get; }
         public GroupsViewModel GroupsViewModel { get; }
         public MapViewModel MapViewModel { get; }
     }

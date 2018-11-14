@@ -5,6 +5,7 @@ using System.Waf.Foundation;
 using System.Windows;
 using GeoLayout.Domain;
 using GeoLayout.Domain.Data;
+using GeoLayout.NamingScheme;
 using GeoLayout.Services;
 
 namespace GeoLayout.GeoLayoutTools {
@@ -26,10 +27,23 @@ namespace GeoLayout.GeoLayoutTools {
 
         private int _startIndex = 1;
         private int _indexIncrement = 1;
-        
+
+        private ProfileNamingScheme _selectedNamingScheme;
+
+        private readonly ProfileNamingScheme _prefixSuffixScheme;
+        private bool _prefixSuffixSchemeInUse = false;
+
         public ProfileBuilder(WaypointsService waypointsService, GroupsService groupsService) {
             WaypointsService = waypointsService;
             GroupsService = groupsService;
+
+            _prefixSuffixScheme = new ProfileNamingScheme("[Префикс][Пикет][Суффикс]", index => (Prefix ?? "") + (index + 1).ToString("D" + Digits) + (Suffix ?? ""));
+
+            ProfileNamingSchemes = new[] {
+                new ProfileNamingScheme("[Профиль]-[Пикет]", index => (ProfileName ?? "") + "-" + (index + 1).ToString("D" + Digits)),
+                new ProfileNamingScheme("[Пикет]-[Профиль]", index => (index + 1).ToString("D" + Digits) + "-" + (ProfileName ?? "")),
+                _prefixSuffixScheme
+            };
 
             StartPoint = WaypointsService.Waypoints.FirstOrDefault();
         }
@@ -42,7 +56,7 @@ namespace GeoLayout.GeoLayoutTools {
         public void Apply() {
 
             var group = new Group(ProfileName);
-            var wps = ProfileFactory.CreateWithFixedStep(StartPoint, LengthMeters, StepMeters, AngleDeg / 180.0 * Math.PI, i => (Prefix ?? "") + (i + 1).ToString("D" + Digits) + (Suffix ?? ""));
+            var wps = ProfileFactory.CreateWithFixedStep(StartPoint, LengthMeters, StepMeters, AngleDeg / 180.0 * Math.PI, SelectedNamingScheme.GetWaypointName);
 
             wps.ForEach(p => {
                 WaypointsService.Waypoints.Add(p);
@@ -54,7 +68,7 @@ namespace GeoLayout.GeoLayoutTools {
 
         public void Build(List<Waypoint> points) {
             var group = new Group(ProfileName);
-            var wps = ProfileFactory.CreateWithFixedStep(points, StepMeters, i => (Prefix ?? "") + (i + 1).ToString("D" + Digits) + (Suffix ?? ""));
+            var wps = ProfileFactory.CreateWithFixedStep(points, StepMeters, SelectedNamingScheme.GetWaypointName);
 
             wps.ForEach(p => {
                 WaypointsService.Waypoints.Add(p);
@@ -65,6 +79,29 @@ namespace GeoLayout.GeoLayoutTools {
         }
 
         public string Name => "Построить профиль";
+
+        public ProfileNamingScheme[] ProfileNamingSchemes { get; }
+
+        public ProfileNamingScheme SelectedNamingScheme {
+            get => _selectedNamingScheme;
+            set {
+                if (_selectedNamingScheme != value) {
+                    _selectedNamingScheme = value;
+                    RaisePropertyChanged(nameof(SelectedNamingScheme));
+                    PrefixSuffixSystemInUse = _selectedNamingScheme == _prefixSuffixScheme;
+                }
+            }
+        }
+
+        public bool PrefixSuffixSystemInUse {
+            get => _prefixSuffixSchemeInUse;
+            private set {
+                if (_prefixSuffixSchemeInUse != value) {
+                    _prefixSuffixSchemeInUse = value;
+                    RaisePropertyChanged(nameof(PrefixSuffixSystemInUse));
+                }
+            }
+        }
 
         public Waypoint StartPoint {
             get => _startPoint;
@@ -178,7 +215,7 @@ namespace GeoLayout.GeoLayoutTools {
                 }
             }
         }
-
+        
         public WaypointsService WaypointsService { get; }
         public GroupsService GroupsService { get; }
 

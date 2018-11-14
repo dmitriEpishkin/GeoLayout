@@ -22,7 +22,7 @@ namespace GeoLayout {
 
         }
 
-        private void Waypoints_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+        private void Waypoints_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                     foreach (var p in e.NewItems.OfType<Waypoint>()) 

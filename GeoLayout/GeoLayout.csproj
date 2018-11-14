@@ -73,9 +73,9 @@
     <Compile Include="GeoLayoutTools\RotateModifier.cs" />
     <Compile Include="GeoLayoutTools\ShiftModifier.cs" />
     <Compile Include="GeoLayoutTools\SingleWaypointBuilder.cs" />
+    <Compile Include="NamingScheme\ProfileNamingScheme.cs" />
     <Compile Include="ResourceUtil.cs" />
-    <Compile Include="Services\ConsoleInterpretatorService.cs" />
-    <Compile Include="Services\GeoLayoutService.cs" />
+    <Compile Include="Services\GeoLayoutBuildingService.cs" />
     <Compile Include="Services\GroupsService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="SettingEnums\CoordinatesRepresentationType.cs" />
@@ -83,7 +83,6 @@
       <DependentUpon>CoordinatesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewElements\LatLongTextBox.cs" />
-    <Compile Include="ViewModels\BuilderViewModel.cs" />
     <Compile Include="ViewModels\GeoLocationViewModel.cs" />
     <Compile Include="ViewModels\GroupsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -116,9 +115,6 @@
     <Compile Include="Views\ShiftPointMapView.xaml.cs">
       <DependentUpon>ShiftPointMapView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ToolsSetting.xaml.cs">
-      <DependentUpon>ToolsSetting.xaml</DependentUpon>
-    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -131,10 +127,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Templates\GeoLayoutToolsTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Themes\GeoLayoutTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -176,10 +168,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ShiftPointMapView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ToolsSetting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

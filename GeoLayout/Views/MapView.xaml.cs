@@ -38,6 +38,7 @@ namespace GeoLayout.Views
 
             Map.MapProvider = GMapProviders.BingSatelliteMap;
 
+            
             Map.Layers = new ObservableCollection<IGMapElementsLayer>();
             Map.Layers.Clear();
             Map.Layers.Add(PointsLayer);
@@ -46,23 +47,23 @@ namespace GeoLayout.Views
 
             AddPointLayer.AddPointUI = new AddPointMapView();
             AddPointLayer.AddPointAction = lng => {
-                _model.BuilderService.WaypointBuilder.Latitude = lng.Lat;
-                _model.BuilderService.WaypointBuilder.Longitude = lng.Lng;
-                _model.BuilderService.WaypointBuilder.Apply();
+                _model.GeoLayoutBuildingService.WaypointBuilder.Latitude = lng.Lat;
+                _model.GeoLayoutBuildingService.WaypointBuilder.Longitude = lng.Lng;
+                _model.GeoLayoutBuildingService.WaypointBuilder.Apply();
             };
-            
+
             AddPointLayer.IsActive = true;
             AddPointLayer.MapControl = Map;
-            
-            AddPointLayer.Ok.Style = (Style) res["MapToolButtonStyle"];
-            AddPointLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative))};
+
+            AddPointLayer.Ok.Style = (Style)res["MapToolButtonStyle"];
+            AddPointLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
             AddPointLayer.Close.Style = (Style)res["MapToolButtonStyle"];
             AddPointLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
 
             AddPointLayer.PropertyChanged += (sender, args) => {
                 if (args.PropertyName == "Point") {
                     var point = AddPointLayer.Point;
-                    _model.BuilderService.WaypointBuilder.SetPosition(point.Lat, point.Lng);
+                    _model.GeoLayoutBuildingService.WaypointBuilder.SetPosition(point.Lat, point.Lng);
 
                     if (!Map.GMapControl.ViewArea.Contains(AddPointLayer.Point))
                         Map.GMapControl.Position = AddPointLayer.Point;
@@ -77,25 +78,23 @@ namespace GeoLayout.Views
             };
             ShiftPointLayer.PropertyChanged += (sender, args) => {
                 if (args.PropertyName == "CurrentPosition") {
-                    _model.BuilderService.ShiftModifier.Location = new GeoLocation(
+                    _model.GeoLayoutBuildingService.ShiftModifier.Location = new GeoLocation(
                         ShiftPointLayer.CurrentPosition.Lat,
                         ShiftPointLayer.CurrentPosition.Lng,
-                        _model.BuilderService.ShiftModifier.SelectedWaypoint?.Location.Elevation ?? 0.0);
+                        _model.GeoLayoutBuildingService.ShiftModifier.SelectedWaypoint?.Location.Elevation ?? 0.0);
                 }
             };
             ShiftPointLayer.MapControl = Map;
 
-            _model.BuilderService.WaypointBuilder.PropertyChanged += (sender, args) => {
+            _model.GeoLayoutBuildingService.WaypointBuilder.PropertyChanged += (sender, args) => {
                 if (args.PropertyName == "Latitude" || args.PropertyName == "Longitude") {
-                    var builder = _model.BuilderService.WaypointBuilder;
+                    var builder = _model.GeoLayoutBuildingService.WaypointBuilder;
 
                     AddPointLayer.Point = new PointLatLng(builder.Latitude, builder.Longitude);
                 }
             };
 
-            MapRuler.MapControl = Map;
-
-            var multiRulerTextBlock = new TextBlock() { Margin = new Thickness(3) }; 
+            var multiRulerTextBlock = new TextBlock() { Margin = new Thickness(3) };
             MultiRulerToolLayer.MapControl = Map;
             MultiRulerToolLayer.Ok.Visibility = Visibility.Collapsed;
             MultiRulerToolLayer.Content = multiRulerTextBlock;
@@ -120,21 +119,21 @@ namespace GeoLayout.Views
             RouteToolLayer.MapControl = Map;
             RouteToolLayer.Content = new CreateProfileMapView();
             RouteToolLayer.RouteToolAction = points => {
-                _model.BuilderService.ProfileBuilder.Build(points.ConvertAll(p => new Waypoint("", new GeoLocation(p.Lat, p.Lng, 0.0))));
+                _model.GeoLayoutBuildingService.ProfileBuilder.Build(points.ConvertAll(p => new Waypoint("", new GeoLocation(p.Lat, p.Lng, 0.0))));
             };
-            RouteToolLayer.Ok.Style = (Style) res["MapToolButtonStyle"];
+            RouteToolLayer.Ok.Style = (Style)res["MapToolButtonStyle"];
             RouteToolLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
-            RouteToolLayer.Close.Style = (Style) res["MapToolButtonStyle"];
+            RouteToolLayer.Close.Style = (Style)res["MapToolButtonStyle"];
             RouteToolLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
 
             RectangleToolLayer.MapControl = Map;
             RectangleToolLayer.RectToolAction = (corner, p1, p2) => {
-                _model.BuilderService.GridBuilder.SetupWithGridFrame(new GridFrame(
+                _model.GeoLayoutBuildingService.GridBuilder.SetupWithGridFrame(new GridFrame(
                     new GeoLocation(corner.Lat, corner.Lng, 0),
                     new GeoLocation(p1.Lat, p1.Lng, 0),
                     new GeoLocation(p2.Lat, p2.Lng, 0)));
-                _model.BuilderService.GridBuilder.Apply();
-            }; 
+                _model.GeoLayoutBuildingService.GridBuilder.Apply();
+            };
             RectangleToolLayer.Content = new CreateGridMapView();
             RectangleToolLayer.Ok.Style = (Style)res["MapToolButtonStyle"];
             RectangleToolLayer.Ok.Content = new Image { Source = new BitmapImage(new Uri("../Images/Check.png", UriKind.Relative)) };
@@ -142,7 +141,7 @@ namespace GeoLayout.Views
             RectangleToolLayer.Close.Content = new Image { Source = new BitmapImage(new Uri("../Images/Delete.png", UriKind.Relative)) };
 
             PolygonToolLayer.MapControl = Map;
-            
+
             Map.SelectedItems.CollectionChanged += SelectedItems_CollectionChanged;
             _model.WaypointsService.SelectedWaypoints.CollectionChanged += SelectedWaypoints_CollectionChanged;
 

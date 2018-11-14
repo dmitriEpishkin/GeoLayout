@@ -9,13 +9,13 @@ namespace GeoLayout.ViewModels
 {
     public class MapViewModel {
 
-        public MapViewModel(WaypointsService waypointsService, GeoLayoutService builderService) {
+        public MapViewModel(WaypointsService waypointsService, GeoLayoutBuildingService geoLayoutBuildingService) {
             WaypointsService = waypointsService;
-            BuilderService = builderService;
+            GeoLayoutBuildingService = geoLayoutBuildingService;
         }
 
         public WaypointsService WaypointsService { get; }
-        public GeoLayoutService BuilderService { get; }
+        public GeoLayoutBuildingService GeoLayoutBuildingService { get; }
 
     }
 }

@@ -21,7 +21,7 @@ namespace GeoLayout.Views {
         public CreateProfileMapView() {
             InitializeComponent();
 
-            DataContext = ((App)Application.Current).LayoutBuilderService.ProfileBuilder;
+            DataContext = ((App)Application.Current).GeoLayoutBuildingService.ProfileBuilder;
         }
     }
 }

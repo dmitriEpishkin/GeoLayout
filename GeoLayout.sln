@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLayout", "GeoLayout\GeoL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLayout.Domain", "GeoLayout.Domain\GeoLayout.Domain.csproj", "{D3E1F2BE-214A-4FC7-AF09-8D613AF2862C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoLayout.Console", "GeoLayout.Console\GeoLayout.Console.csproj", "{C97984FE-FC81-4463-878C-F0DACABBE4DD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nordwest.Wpf.MapControl", "Nordwest.Wpf.MapControl\Nordwest.Wpf.MapControl.csproj", "{5B4E215F-CF3D-404D-B021-535BCEFDC2E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nordwest.Core", "Nordwest.Core\Nordwest.Core.csproj", "{035CE569-16A1-49DC-89DF-B2DBD0DF6CBF}"
@@ -27,10 +25,6 @@ Global
 		{D3E1F2BE-214A-4FC7-AF09-8D613AF2862C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3E1F2BE-214A-4FC7-AF09-8D613AF2862C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3E1F2BE-214A-4FC7-AF09-8D613AF2862C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C97984FE-FC81-4463-878C-F0DACABBE4DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C97984FE-FC81-4463-878C-F0DACABBE4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C97984FE-FC81-4463-878C-F0DACABBE4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C97984FE-FC81-4463-878C-F0DACABBE4DD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5B4E215F-CF3D-404D-B021-535BCEFDC2E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5B4E215F-CF3D-404D-B021-535BCEFDC2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B4E215F-CF3D-404D-B021-535BCEFDC2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU

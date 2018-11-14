@@ -21,7 +21,7 @@ namespace GeoLayout.Views {
         public CreateGridMapView() {
             InitializeComponent();
 
-            DataContext = ((App) Application.Current).LayoutBuilderService.GridBuilder;
+            DataContext = ((App) Application.Current).GeoLayoutBuildingService.GridBuilder;
         }
     }
 }

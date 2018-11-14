@@ -7,6 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
+        <StackPanel.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </StackPanel.Resources>
+
         <TextBlock Margin="3" Text="Имя профиля:"/>
         <TextBox Margin="3" Text="{Binding ProfileName}"/>
         <TextBlock Margin="3" Text="Шаг по профилю:"/>
@@ -15,5 +19,15 @@
         <TextBox Margin="3" Text="{Binding StartIndex}"/>
         <TextBlock Margin="3" Text="Инкремент при именовании пикетов:"/>
         <TextBox Margin="3" Text="{Binding IndexIncrement}"/>
+        <TextBlock Margin="3" Text="Количество цифр в номере пикета:"/>
+        <TextBox Margin="3" Text="{Binding Digits}"/>
+        <TextBlock Margin="3" Text="Схема именования:"/>
+        <ComboBox Margin="3" ItemsSource="{Binding ProfileNamingSchemes}" SelectedItem="{Binding SelectedNamingScheme}"/>
+        <StackPanel Visibility="{Binding PrefixSuffixSystemInUse, Converter={StaticResource BooleanToVisibilityConverter}}" Orientation="Vertical">
+            <TextBlock Margin="3" Text="Префикс:"/>
+            <TextBox Margin="3" Text="{Binding Prefix}"/>
+            <TextBlock Margin="3" Text="Суффикс:"/>
+            <TextBox Margin="3" Text="{Binding Suffix}"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>

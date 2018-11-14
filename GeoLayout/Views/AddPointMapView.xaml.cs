@@ -19,7 +19,7 @@ namespace GeoLayout.Views
         {
             InitializeComponent();
 
-            _tool = ((App) Application.Current).LayoutBuilderService.WaypointBuilder;
+            _tool = ((App) Application.Current).GeoLayoutBuildingService.WaypointBuilder;
             DataContext = _tool;
 
             _locationModel = (GeoLocationViewModel)CoordinatesView.DataContext;

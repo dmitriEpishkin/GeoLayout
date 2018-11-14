@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using System.Waf.Foundation;
-using GeoLayout.Domain;
-using GeoLayout.Domain.Data;
 using GeoLayout.GeoLayoutTools;
 
 namespace GeoLayout.Services {
-    public class GeoLayoutService : Model {
-
-        private readonly WaypointsService _waypointsService;
-
-        public GeoLayoutService(WaypointsService waypointsService, GroupsService groupsService) {
-
-            _waypointsService = waypointsService;
+    public class GeoLayoutBuildingService : Model {
+        
+        public GeoLayoutBuildingService(WaypointsService waypointsService, GroupsService groupsService) {
 
             WaypointBuilder = new SingleWaypointBuilder(waypointsService, groupsService);
             ProfileBuilder = new ProfileBuilder(waypointsService, groupsService);
