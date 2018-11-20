@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,19 +10,29 @@ using System.Waf.Applications;
 using System.Waf.Foundation;
 using System.Windows;
 using GeoLayout.Domain.Data;
+using GeoLayout.Services;
+using GeoLayout.Services.Export;
 using Nordwest.Collections;
 
 namespace GeoLayout {
-    public class WaypointsService : Model {
+    [Export(typeof(IWaypointsService))]
+    public class WaypointsService : Model, IWaypointsService {
 
         private readonly List<Waypoint> _points = new List<Waypoint>();
 
+        private readonly ObservableRangeCollection<Waypoint> _visibleWaypoints = new ObservableRangeCollection<Waypoint>();
+        private readonly ObservableRangeCollection<Waypoint> _selectedWaypoints = new ObservableRangeCollection<Waypoint>();
+
+        [ImportingConstructor]
         public WaypointsService() {
-            
+
+            VisibleWaypoints = new ObservableCollectionReadOnlyWrapping<Waypoint>(_visibleWaypoints);
+            SelectedWaypoints = new ObservableCollectionReadOnlyWrapping<Waypoint>(_selectedWaypoints);
+
             RemoveCommand = new DelegateCommand(obj => Waypoints.Remove((Waypoint)obj));
 
             Waypoints.CollectionChanged += Waypoints_CollectionChanged;
-
+            
         }
 
         private void Waypoints_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -41,7 +52,8 @@ namespace GeoLayout {
                 case NotifyCollectionChangedAction.Move:
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    VisibleWaypoints.Clear();
+                    _visibleWaypoints.Clear();
+                    _selectedWaypoints.Clear();
                     _points.ForEach(p => p.PropertyChanged -= P_PropertyChanged);
                     _points.Clear();
                     break;
@@ -53,7 +65,10 @@ namespace GeoLayout {
         private void AddWaypoints(List<Waypoint> waypoints) {
 
             var visibleWaypoints = waypoints.FindAll(waypoint => waypoint.IsVisible);
-            VisibleWaypoints.AddRange(visibleWaypoints);
+            _visibleWaypoints.AddRange(visibleWaypoints);
+
+            var selectedWaypoints = waypoints.FindAll(waypoint => waypoint.IsSelected);
+            _selectedWaypoints.AddRange(selectedWaypoints);
 
             waypoints.ForEach(waypoint => waypoint.PropertyChanged += P_PropertyChanged);
 
@@ -61,8 +76,12 @@ namespace GeoLayout {
         }
 
         private void RemoveWaypoint(Waypoint p) {
+
             if (p.IsVisible)
-                VisibleWaypoints.Remove(p);
+                _visibleWaypoints.Remove(p);
+            if (p.IsSelected)
+                _selectedWaypoints.Remove(p);
+
             p.PropertyChanged -= P_PropertyChanged;
             _points.Remove(p);
         }
@@ -71,25 +90,25 @@ namespace GeoLayout {
             if (e.PropertyName == @"IsVisible") {
                 var p = (Waypoint) sender;
                 if (p.IsVisible) {
-                    VisibleWaypoints.Add(p);
+                    _visibleWaypoints.Add(p);
                 }
                 else {
-                    VisibleWaypoints.Remove(p);
+                    _visibleWaypoints.Remove(p);
                 }
             }
             else if (e.PropertyName == @"IsSelected") {
                 var p = (Waypoint)sender;
                 if (p.IsSelected)
-                    SelectedWaypoints.Add(p);
+                    _selectedWaypoints.Add(p);
                 else {
-                    SelectedWaypoints.Remove(p);
+                    _selectedWaypoints.Remove(p);
                 }
             }
         }
 
         public ObservableRangeCollection<Waypoint> Waypoints { get; } = new ObservableRangeCollection<Waypoint>();
-        public ObservableRangeCollection<Waypoint> VisibleWaypoints { get; } = new ObservableRangeCollection<Waypoint>();
-        public ObservableRangeCollection<Waypoint> SelectedWaypoints { get; } = new ObservableRangeCollection<Waypoint>();
+        public ObservableCollectionReadOnlyWrapping<Waypoint> VisibleWaypoints { get; } 
+        public ObservableCollectionReadOnlyWrapping<Waypoint> SelectedWaypoints { get; } 
 
         public DelegateCommand RemoveCommand { get; }
 

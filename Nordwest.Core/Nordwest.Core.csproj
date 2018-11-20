@@ -53,6 +53,7 @@
     <Compile Include="Collections\DispatcheredObservableCollection.cs" />
     <Compile Include="Collections\FilteredObservableCollection.cs" />
     <Compile Include="Collections\Mapping.cs" />
+    <Compile Include="Collections\ObservableCollectionReadOnlyWrapping.cs" />
     <Compile Include="Default.cs" />
     <Compile Include="Notifications\CollectionChangingEventArgs.cs" />
     <Compile Include="Notifications\ICollectionChangeEventArgs.cs" />

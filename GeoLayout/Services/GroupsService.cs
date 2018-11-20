@@ -3,28 +3,33 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Waf.Foundation;
 using GeoLayout.Domain.Data;
+using GeoLayout.Services.Export;
 using Nordwest.Collections;
 
 namespace GeoLayout.Services {
-    public class GroupsService : Model {
+    [Export(typeof(IGroupsService))]
+    public class GroupsService : Model, IGroupsService {
 
-        private readonly WaypointsService _waypointsService;
-
-        private readonly Group _defaultGroup; 
-
+        private readonly IWaypointsService _waypointsService;
+        
+        private readonly ObservableCollection<IShapeProvider> _shapes = new ObservableCollection<IShapeProvider>();
         private readonly List<Group> _subscribed = new List<Group>();
 
-        public GroupsService(WaypointsService waypointsService) {
+        [ImportingConstructor]
+        public GroupsService(IWaypointsService waypointsService) {
 
             _waypointsService = waypointsService;
 
-            _defaultGroup = new Group("Не сгруппированные");
+            Shapes = new ObservableCollectionReadOnlyWrapping<IShapeProvider>(_shapes);
+
+            DefaultGroup = new Group("Не сгруппированные");
 
             _waypointsService.Waypoints.CollectionChanged += Waypoints_CollectionChanged;
-            _defaultGroup.Children.CollectionChanged += DefaultWaypoints_CollectionChanged;
+            DefaultGroup.Children.CollectionChanged += DefaultWaypoints_CollectionChanged;
             Groups.CollectionChanged += Groups_CollectionChanged;
         }
 
@@ -57,10 +62,10 @@ namespace GeoLayout.Services {
 
         private void Subscribe(Group group) {
 
-            if (group == _defaultGroup)
+            if (group == DefaultGroup)
                 return;
             
-            foreach (var defaultGroupWaypoint in _defaultGroup.Children.OfType<Waypoint>().ToList()) {
+            foreach (var defaultGroupWaypoint in DefaultGroup.Children.OfType<Waypoint>().ToList()) {
                 CheckWaypoint(defaultGroupWaypoint);
             }
 
@@ -82,7 +87,7 @@ namespace GeoLayout.Services {
         }
 
         private void Unsubscribe(Group group) {
-            if (group == _defaultGroup)
+            if (group == DefaultGroup)
                 return;
 
             group.Children.CollectionChanged -= GroupChildren_CollectionChanged;
@@ -95,10 +100,10 @@ namespace GeoLayout.Services {
         private void DefaultWaypoints_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             #warning надо исправить!!!
             try {
-                if (_defaultGroup.Children.Count == 0)
-                    Groups.Remove(_defaultGroup);
-                else if (_defaultGroup.Children.Count > 0 && !Groups.Contains(_defaultGroup))
-                    Groups.Insert(0, _defaultGroup);
+                if (DefaultGroup.Children.Count == 0)
+                    Groups.Remove(DefaultGroup);
+                else if (DefaultGroup.Children.Count > 0 && !Groups.Contains(DefaultGroup))
+                    Groups.Insert(0, DefaultGroup);
             }
             catch { }
         }
@@ -127,23 +132,23 @@ namespace GeoLayout.Services {
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            RemoveEmptyGroups();
+            //RemoveEmptyGroups();
         }
 
         private void CheckWaypoint(Waypoint wpt) {
 
-            if (Groups.OfType<Group>().Where(g => g != _defaultGroup).Any(g => g.HasWaypoint(wpt))) {
-                    _defaultGroup.Children.Remove(wpt);
+            if (Groups.OfType<Group>().Where(g => g != DefaultGroup).Any(g => g.HasWaypoint(wpt))) {
+                    DefaultGroup.Children.Remove(wpt);
             }
 
-            else if (!_defaultGroup.Children.Contains(wpt))
-                _defaultGroup.Children.Add(wpt);
+            else if (!DefaultGroup.Children.Contains(wpt))
+                DefaultGroup.Children.Add(wpt);
 
         }
 
         private void RemoveWaypoint(Waypoint p, IEnumerable<IGroupingNode> groups) {
             
-            _defaultGroup.Children.Remove(p);
+            DefaultGroup.Children.Remove(p);
 
             if (groups == null)
                 return;
@@ -175,7 +180,7 @@ namespace GeoLayout.Services {
         }
 
         private void UpdateShapesCollection() {
-            Shapes.Clear();
+            _shapes.Clear();
             FindAllShapes(Groups);
         }
 
@@ -185,17 +190,19 @@ namespace GeoLayout.Services {
                 return;
 
             foreach (var group in groups) {
-                if (group is IShapeProvider shape)
-                    Shapes.Add(shape);
+                if (group is IShapeProvider shape && group.Children.Count > 0)
+                    _shapes.Add(shape);
 
                 FindAllShapes(group.Children);
             }
 
         }
 
+        public Group DefaultGroup { get; }
+
         public ObservableRangeCollection<IGroupingNode> Groups { get; } = new ObservableRangeCollection<IGroupingNode>();
 
-        public ObservableCollection<IShapeProvider> Shapes { get; } = new ObservableCollection<IShapeProvider>();
+        public ObservableCollectionReadOnlyWrapping<IShapeProvider> Shapes { get; }
 
     }
 }

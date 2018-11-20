@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using GeoLayout.Domain.IO;
+using GeoLayout.Services.Export;
 
 namespace GeoLayout.Services {
     public class ExportService {
 
         private readonly List<IGeoExporter> _exporters;
         private readonly SaveFileDialogService _saveFileDialogService;
-        private readonly WaypointsService _waypointsService;
+        private readonly IWaypointsService _waypointsService;
 
-        public ExportService(List<IGeoExporter> exporters, SaveFileDialogService saveFileDialogService, WaypointsService waypointsService) {
+        public ExportService(List<IGeoExporter> exporters, SaveFileDialogService saveFileDialogService, IWaypointsService waypointsService) {
             _exporters = exporters;
             _saveFileDialogService = saveFileDialogService;
             _waypointsService = waypointsService;

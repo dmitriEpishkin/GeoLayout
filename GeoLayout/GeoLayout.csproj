@@ -53,6 +53,7 @@
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -131,6 +132,8 @@
     <Compile Include="NamingScheme\ProfileNamingScheme.cs" />
     <Compile Include="ResourceUtil.cs" />
     <Compile Include="Services\ExportService.cs" />
+    <Compile Include="Services\Export\IGroupsService.cs" />
+    <Compile Include="Services\Export\IWaypointsService.cs" />
     <Compile Include="Services\GeoLayoutBuildingService.cs" />
     <Compile Include="Services\GroupsService.cs" />
     <Compile Include="Services\ImportService.cs" />
